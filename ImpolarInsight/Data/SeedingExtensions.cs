@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace ImpolarInsight.Data;
 
 public static class SeedingExtensions {
@@ -6,7 +8,12 @@ public static class SeedingExtensions {
             var db = scope
                 .ServiceProvider
                 .GetRequiredService<ImpolarInsightContext>();
-
+                
+            // Apply any pending migrations
+            db.Database.Migrate();
+            
+            // Seed development data
+            DevelopmentSeeder.Seed(db);
         }
 
         return host;

@@ -60,6 +60,8 @@ if (!builder.Environment.IsDevelopment()) {
     builder.Services.AddScoped<IUserService, DevelopmentUserService>();
 }
 
+// Add this to your Program.cs in the builder.Services.AddGraphQLServer() section
+
 builder.Services
     .AddGraphQLServer()
     .AddAuthorization()
@@ -68,16 +70,15 @@ builder.Services
     .AddSorting()
     .AddMutationConventions(applyToAllMutations: true)
     .RegisterDbContextFactory<ImpolarInsightContext>()
-    //.AddTypes().AddType<Project>()
-    // .AddTypes()
-    // .AddType<EmailContactStringProperty>()
-    // .AddType<EmailContactNumberProperty>()
-    // .AddType<EmailContactDateProperty>()
-    // .AddType<EmailContactChoiceProperty>()
-    // .AddType<EmailContactStringPropertyValue>()
-    // .AddType<EmailContactNumberPropertyValue>()
-    // .AddType<EmailContactDatePropertyValue>()
-    // .AddType<EmailContactChoicePropertyValue>()
+    .AddType<Project>()
+    .AddType<Board>()
+    .AddType<Post>()
+    .AddType<Vote>()
+    .AddType<Roadmap>()
+    .AddType<User>()
+    .AddType<Comment>()
+    .AddType<PostActivity>()
+    .AddType<SiteSettings>()
     .ModifyRequestOptions(
         opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment()
     )
