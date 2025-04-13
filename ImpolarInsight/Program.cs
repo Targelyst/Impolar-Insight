@@ -4,18 +4,11 @@ using Microsoft.IdentityModel.Tokens;
 using ImpolarInsight.Auth;
 using ImpolarInsight.Configuration;
 using ImpolarInsight.Data;
-using ImpolarInsight.GraphQL;
 using ImpolarInsight.Models;
-using ImpolarInsight.Models.Workflow;
-using ImpolarInsight.Models.Workflow.NodeTypes;
 using ImpolarInsight.Services;
-using ImpolarInsight.Services.Temporal;
-using Temporalio.Client;
-using Temporalio.Worker;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add configurations
 builder.Services.AddOptions<DatabaseConfiguration>()
   .Bind(builder.Configuration.GetSection(DatabaseConfiguration.Section))
   .ValidateDataAnnotations()
@@ -26,12 +19,6 @@ builder.Services.AddOptions<AuthConfiguration>()
   .ValidateDataAnnotations()
   .ValidateOnStart();
 
-builder.Services.AddOptions<TemporalConfiguration>()
-  .Bind(builder.Configuration.GetSection(TemporalConfiguration.Section))
-  .ValidateDataAnnotations()
-  .ValidateOnStart();
-
-// Add database context
 builder.Services.AddDbContextFactory<ImpolarInsightContext>(opt => {
     var c = builder.Configuration.GetSection(DatabaseConfiguration.Section).Get<DatabaseConfiguration>()
       ?? throw new Exception($"Could not get configuration section {DatabaseConfiguration.Section}");
@@ -45,34 +32,6 @@ builder.Services
     .AddHttpContextAccessor()
     .AddScoped<IAuthorizationHandler, HasTenantHandler>();
 
-// Add Temporal client and services
-builder.Services.AddSingleton<ITemporalClient>(sp => {
-    var config = sp.GetRequiredService<IOptions<TemporalConfiguration>>().Value;
-    return TemporalClient.Connection(new TemporalClientConnectOptions {
-        TargetHost = config.ServiceUrl,
-        Namespace = config.Namespace
-    }).GetAwaiter().GetResult();
-});
-
-builder.Services.AddSingleton<ITemporalWorker>(sp => {
-    var client = sp.GetRequiredService<ITemporalClient>();
-    var config = sp.GetRequiredService<IOptions<TemporalConfiguration>>().Value;
-    var factory = sp.GetRequiredService<IServiceScopeFactory>();
-    
-    // Create a scope to register workflows and activities
-    using var scope = factory.CreateScope();
-    
-    return new TemporalWorkerBuilder(client, config.TaskQueue)
-        .AddWorkflow<AutomationWorkflow>()
-        .AddActivity(sp => new WorkflowActivities(
-            sp.GetRequiredService<IServiceScopeFactory>(),
-            sp.GetRequiredService<ILogger<WorkflowActivities>>()))
-        .BuildAsync().GetAwaiter().GetResult();
-});
-
-builder.Services.AddScoped<WorkflowExecutionService>();
-
-// Conditionally configure authentication
 if (!builder.Environment.IsDevelopment()) {
     builder.Services
         .AddScoped<IUserService, UserService>()
@@ -101,7 +60,6 @@ if (!builder.Environment.IsDevelopment()) {
     builder.Services.AddScoped<IUserService, DevelopmentUserService>();
 }
 
-// Configure GraphQL
 builder.Services
     .AddGraphQLServer()
     .AddAuthorization()
@@ -110,17 +68,16 @@ builder.Services
     .AddSorting()
     .AddMutationConventions(applyToAllMutations: true)
     .RegisterDbContextFactory<ImpolarInsightContext>()
-    .AddQueryType()
-    .AddTypeExtension<WorkflowQueries>()
-    .AddMutationType()
-    .AddTypeExtension<WorkflowMutations>()
-    // Add our custom types
-    .AddType<WorkflowType>()
-    .AddType<NodeType>()
-    .AddType<TimeTriggerNodeType>()
-    .AddType<DelayNodeType>()
-    .AddType<HttpRequestNodeType>()
-    .AddType<EdgeType>()
+    //.AddTypes().AddType<Project>()
+    // .AddTypes()
+    // .AddType<EmailContactStringProperty>()
+    // .AddType<EmailContactNumberProperty>()
+    // .AddType<EmailContactDateProperty>()
+    // .AddType<EmailContactChoiceProperty>()
+    // .AddType<EmailContactStringPropertyValue>()
+    // .AddType<EmailContactNumberPropertyValue>()
+    // .AddType<EmailContactDatePropertyValue>()
+    // .AddType<EmailContactChoicePropertyValue>()
     .ModifyRequestOptions(
         opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment()
     )
@@ -131,32 +88,9 @@ builder.Services
         }
     );
 
-// Enable CORS for development
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddCors(options =>
-    {
-        options.AddDefaultPolicy(policy =>
-        {
-            policy.AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-    });
-}
-
 var app = builder.Build();
 
-// Start Temporal worker
-if (!app.Environment.IsDevelopment())
-{
-    var worker = app.Services.GetRequiredService<ITemporalWorker>();
-    await worker.StartAsync();
-}
-
-// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment()) {
-    app.UseCors();
     app.UseSeeding();
 } else {
     app.UseAuthentication();
