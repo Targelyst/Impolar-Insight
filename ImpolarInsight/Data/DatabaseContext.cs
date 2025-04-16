@@ -28,18 +28,20 @@ public class ImpolarInsightContext : DbContext {
     public DbSet<Comment> Comments { get; set; }
     public DbSet<PostActivity> PostActivities { get; set; }
     public DbSet<SiteSettings> SiteSettings { get; set; }
+    public DbSet<Tenant> Tenants { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         // Apply tenant filter to all entities derived from Entity
-        modelBuilder.Entity<Project>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<Board>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<Post>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<Vote>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<Roadmap>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<User>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<Comment>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<PostActivity>().HasQueryFilter(e => e.Tenant == userService.Tenant);
-        modelBuilder.Entity<SiteSettings>().HasQueryFilter(e => e.Tenant == userService.Tenant);
+        modelBuilder.Entity<Project>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<Board>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<Post>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<Vote>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<Roadmap>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<User>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<Comment>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<PostActivity>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<SiteSettings>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<Tenant>().HasQueryFilter(e => e.Domain == userService.TenantDomain);
         
         // Configure relationships
         modelBuilder.Entity<Post>()

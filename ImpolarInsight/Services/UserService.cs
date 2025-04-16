@@ -5,7 +5,7 @@ using ImpolarInsight.Configuration;
 namespace ImpolarInsight.Services;
 
 public interface IUserService {
-    public string Tenant { get; }
+    public string TenantDomain { get; }
 }
 
 public class UserInformationRetrievalException(
@@ -14,7 +14,7 @@ public class UserInformationRetrievalException(
 
 public class DevelopmentUserService : IUserService {
 
-    public string Tenant => "development-tenant";
+    public string TenantDomain => "localhost";
 
 }
 
@@ -23,19 +23,17 @@ public class UserService(
     IHttpContextAccessor httpContext
 ) : IUserService {
 
-    public string Tenant {
+    public string TenantDomain {
         get {
             var context = httpContext.HttpContext
                 ?? throw new UserInformationRetrievalException("HttpContext could not be retrieved");
 
-            var tenant = context
-                .User
-                .Claims
-                .FirstOrDefault(c => c.Type == configuration.Value.TenantClaim)?
-                .Value
-                ?? throw new UserInformationRetrievalException("User has no tenant claim");
+            var origin = context.Request.Headers.Origin.FirstOrDefault()
+                ?? throw new UserInformationRetrievalException("Origin header could not be retrieved");
 
-            return tenant;
+            var originUri = new Uri(origin);
+
+            return originUri.Host;
         }
     }
 

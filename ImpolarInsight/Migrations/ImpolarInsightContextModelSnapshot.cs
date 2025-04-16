@@ -39,9 +39,8 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -51,6 +50,8 @@ namespace ImpolarInsight.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Boards");
                 });
@@ -80,9 +81,8 @@ namespace ImpolarInsight.Migrations
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -90,6 +90,8 @@ namespace ImpolarInsight.Migrations
                         .IsUnique();
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Comments");
                 });
@@ -117,9 +119,8 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -133,6 +134,8 @@ namespace ImpolarInsight.Migrations
                     b.HasIndex("BoardId");
 
                     b.HasIndex("RoadmapId");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("UserId");
 
@@ -154,9 +157,8 @@ namespace ImpolarInsight.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -167,6 +169,8 @@ namespace ImpolarInsight.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("PostActivities");
                 });
@@ -181,11 +185,12 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Projects");
                 });
@@ -210,15 +215,16 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Roadmaps");
                 });
@@ -257,16 +263,32 @@ namespace ImpolarInsight.Migrations
                     b.Property<string>("Logo")
                         .HasColumnType("text");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("SiteSettings");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.Tenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.User", b =>
@@ -301,15 +323,16 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Users");
                 });
@@ -323,9 +346,8 @@ namespace ImpolarInsight.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Tenant")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -334,9 +356,22 @@ namespace ImpolarInsight.Migrations
 
                     b.HasIndex("PostId");
 
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Votes");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.Board", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany("Boards")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.Comment", b =>
@@ -352,9 +387,17 @@ namespace ImpolarInsight.Migrations
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Activity");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.Post", b =>
@@ -369,6 +412,12 @@ namespace ImpolarInsight.Migrations
                         .HasForeignKey("RoadmapId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ImpolarInsight.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
@@ -378,6 +427,8 @@ namespace ImpolarInsight.Migrations
                     b.Navigation("Board");
 
                     b.Navigation("Roadmap");
+
+                    b.Navigation("Tenant");
 
                     b.Navigation("User");
                 });
@@ -396,9 +447,61 @@ namespace ImpolarInsight.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Author");
 
                     b.Navigation("Post");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.Project", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.Roadmap", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.SiteSettings", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany("SiteSettings")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.User", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.Vote", b =>
@@ -409,6 +512,12 @@ namespace ImpolarInsight.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ImpolarInsight.Models.User", "User")
                         .WithMany("Votes")
                         .HasForeignKey("UserId")
@@ -416,6 +525,8 @@ namespace ImpolarInsight.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+
+                    b.Navigation("Tenant");
 
                     b.Navigation("User");
                 });
@@ -440,6 +551,13 @@ namespace ImpolarInsight.Migrations
             modelBuilder.Entity("ImpolarInsight.Models.Roadmap", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.Tenant", b =>
+                {
+                    b.Navigation("Boards");
+
+                    b.Navigation("SiteSettings");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.User", b =>

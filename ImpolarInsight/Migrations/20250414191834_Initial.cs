@@ -6,11 +6,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ImpolarInsight.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Tenants",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Domain = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Boards",
                 columns: table => new
@@ -21,11 +33,17 @@ namespace ImpolarInsight.Migrations
                     Color = table.Column<string>(type: "text", nullable: false),
                     Display = table.Column<bool>(type: "boolean", nullable: false),
                     ViewVoters = table.Column<bool>(type: "boolean", nullable: false),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Boards", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Boards_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -34,11 +52,17 @@ namespace ImpolarInsight.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,11 +75,17 @@ namespace ImpolarInsight.Migrations
                     Color = table.Column<string>(type: "text", nullable: false),
                     Index = table.Column<int>(type: "integer", nullable: false),
                     Display = table.Column<bool>(type: "boolean", nullable: false),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roadmaps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Roadmaps_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -73,11 +103,17 @@ namespace ImpolarInsight.Migrations
                     AllowSignup = table.Column<bool>(type: "boolean", nullable: false),
                     DeveloperMode = table.Column<bool>(type: "boolean", nullable: false),
                     Labs = table.Column<string>(type: "jsonb", nullable: false),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SiteSettings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SiteSettings_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,11 +130,17 @@ namespace ImpolarInsight.Migrations
                     IsOwner = table.Column<bool>(type: "boolean", nullable: false),
                     IsBlocked = table.Column<bool>(type: "boolean", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -113,7 +155,7 @@ namespace ImpolarInsight.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     BoardId = table.Column<Guid>(type: "uuid", nullable: true),
                     RoadmapId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -131,6 +173,12 @@ namespace ImpolarInsight.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
+                        name: "FK_Posts_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Posts_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
@@ -147,7 +195,7 @@ namespace ImpolarInsight.Migrations
                     CommentId = table.Column<Guid>(type: "uuid", nullable: true),
                     PostId = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -156,6 +204,12 @@ namespace ImpolarInsight.Migrations
                         name: "FK_PostActivities_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostActivities_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -173,7 +227,7 @@ namespace ImpolarInsight.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     PostId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -182,6 +236,12 @@ namespace ImpolarInsight.Migrations
                         name: "FK_Votes_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Votes_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -203,7 +263,7 @@ namespace ImpolarInsight.Migrations
                     IsSpam = table.Column<bool>(type: "boolean", nullable: false),
                     IsInternal = table.Column<bool>(type: "boolean", nullable: false),
                     ActivityId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Tenant = table.Column<string>(type: "text", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -220,7 +280,18 @@ namespace ImpolarInsight.Migrations
                         principalTable: "PostActivities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Boards_TenantId",
+                table: "Boards",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ActivityId",
@@ -234,6 +305,11 @@ namespace ImpolarInsight.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comments_TenantId",
+                table: "Comments",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PostActivities_AuthorId",
                 table: "PostActivities",
                 column: "AuthorId");
@@ -242,6 +318,11 @@ namespace ImpolarInsight.Migrations
                 name: "IX_PostActivities_PostId",
                 table: "PostActivities",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostActivities_TenantId",
+                table: "PostActivities",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_BoardId",
@@ -254,14 +335,44 @@ namespace ImpolarInsight.Migrations
                 column: "RoadmapId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Posts_TenantId",
+                table: "Posts",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_UserId",
                 table: "Posts",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Projects_TenantId",
+                table: "Projects",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roadmaps_TenantId",
+                table: "Roadmaps",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SiteSettings_TenantId",
+                table: "SiteSettings",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId",
+                table: "Users",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Votes_PostId",
                 table: "Votes",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Votes_TenantId",
+                table: "Votes",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Votes_UserId",
@@ -298,6 +409,9 @@ namespace ImpolarInsight.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Tenants");
         }
     }
 }

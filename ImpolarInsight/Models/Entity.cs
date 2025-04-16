@@ -5,7 +5,8 @@ namespace ImpolarInsight.Models;
 public abstract class Entity {
 
     [GraphQLIgnore]
-    public required string Tenant { get; set; }
+    public required Guid TenantId { get; set; }
+    public Tenant Tenant { get; set; } = null!;
 
 }
 

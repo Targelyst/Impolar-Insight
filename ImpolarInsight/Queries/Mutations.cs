@@ -17,7 +17,7 @@ public static class ProjectMutations {
         var project = new Project {
             Id = Guid.NewGuid(),
             Name = name,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
 
         db.Projects.Add(project);
@@ -75,7 +75,7 @@ public static class BoardMutations {
             Color = color,
             Display = display,
             ViewVoters = viewVoters,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
 
         db.Boards.Add(board);
@@ -154,7 +154,7 @@ public static class PostMutations {
             ContentMarkdown = contentMarkdown,
             UserId = userId,
             BoardId = boardId,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
 
         db.Posts.Add(post);
@@ -202,7 +202,7 @@ public static class PostMutations {
             Type = "status_change",
             PostId = post.Id,
             AuthorId = authorId,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
         
         db.PostActivities.Add(activity);
@@ -248,7 +248,7 @@ public static class VoteMutations {
             Id = Guid.NewGuid(),
             PostId = postId,
             UserId = userId,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
 
         db.Votes.Add(vote);
@@ -294,7 +294,7 @@ public static class RoadmapMutations {
             Color = color,
             Index = index,
             Display = display,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
 
         db.Roadmaps.Add(roadmap);
@@ -383,7 +383,7 @@ public static class UserMutations {
             Name = name,
             IsVerified = true, // Auto-verify for now
             IsOwner = isOwner,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
 
         db.Users.Add(user);
@@ -471,7 +471,7 @@ public static class CommentMutations {
             Type = "comment",
             PostId = postId,
             AuthorId = authorId,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
         
         db.PostActivities.Add(activity);
@@ -484,7 +484,7 @@ public static class CommentMutations {
             ParentId = parentId,
             ActivityId = activity.Id,
             IsInternal = isInternal,
-            Tenant = userService.Tenant
+           TenantId = userService.Tenant
         };
         
         db.Comments.Add(comment);
@@ -586,7 +586,7 @@ public static class SiteSettingsMutations {
                 IsPoweredBy = isPoweredBy ?? true,
                 DeveloperMode = developerMode ?? false,
                 Labs = labs ?? "{}",
-                Tenant = userService.Tenant
+               TenantId = userService.Tenant
             };
             
             db.SiteSettings.Add(settings);

@@ -24,8 +24,8 @@ builder.Services.AddDbContextFactory<ImpolarInsightContext>(opt => {
       ?? throw new Exception($"Could not get configuration section {DatabaseConfiguration.Section}");
 
     opt.UseNpgsql(
-        $"Host={c.Host};Port={c.Port};Database={c.Database};Username={c.User};Password={c.Password}"
-    );
+        $"Host={c.Host};Port={c.Port};Database={c.Database};Username={c.User};Password={c.Password};IncludeErrorDetail=true"
+    ).EnableSensitiveDataLogging().EnableDetailedErrors();
 });
 
 builder.Services
