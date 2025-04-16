@@ -17,8 +17,6 @@ public class ImpolarInsightContext : DbContext {
         this.userService = this.serviceScope.ServiceProvider.GetRequiredService<IUserService>();
     }
 
-    public DbSet<Project> Projects { get; set; }
-    
     // Feedback management models
     public DbSet<Board> Boards { get; set; }
     public DbSet<Post> Posts { get; set; }
@@ -32,7 +30,6 @@ public class ImpolarInsightContext : DbContext {
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         // Apply tenant filter to all entities derived from Entity
-        modelBuilder.Entity<Project>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Board>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Post>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Vote>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
@@ -42,56 +39,56 @@ public class ImpolarInsightContext : DbContext {
         modelBuilder.Entity<PostActivity>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<SiteSettings>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Tenant>().HasQueryFilter(e => e.Domain == userService.TenantDomain);
-        
+
         // Configure relationships
         modelBuilder.Entity<Post>()
             .HasOne(p => p.Board)
             .WithMany(b => b.Posts)
             .HasForeignKey(p => p.BoardId)
             .OnDelete(DeleteBehavior.SetNull);
-            
+
         modelBuilder.Entity<Post>()
             .HasOne(p => p.Roadmap)
             .WithMany(r => r.Posts)
             .HasForeignKey(p => p.RoadmapId)
             .OnDelete(DeleteBehavior.SetNull);
-            
+
         modelBuilder.Entity<Post>()
             .HasOne(p => p.User)
             .WithMany(u => u.Posts)
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         modelBuilder.Entity<Vote>()
             .HasOne(v => v.User)
             .WithMany(u => u.Votes)
             .HasForeignKey(v => v.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         modelBuilder.Entity<Vote>()
             .HasOne(v => v.Post)
             .WithMany(p => p.Votes)
             .HasForeignKey(v => v.PostId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.Parent)
             .WithMany()
             .HasForeignKey(c => c.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
-            
+
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.Activity)
             .WithOne(a => a.Comment)
             .HasForeignKey<Comment>(c => c.ActivityId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         modelBuilder.Entity<PostActivity>()
             .HasOne(pa => pa.Post)
             .WithMany(p => p.Activities)
             .HasForeignKey(pa => pa.PostId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         modelBuilder.Entity<PostActivity>()
             .HasOne(pa => pa.Author)
             .WithMany()

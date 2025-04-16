@@ -71,7 +71,6 @@ builder.Services
     .AddMutationConventions(applyToAllMutations: true)
     .RegisterDbContextFactory<ImpolarInsightContext>()
     .AddTypes()
-    .AddType<Project>()
     .AddType<Board>()
     .AddType<Post>()
     .AddType<Vote>()

@@ -4,23 +4,24 @@ using ImpolarInsight.Models;
 
 namespace ImpolarInsight.Queries;
 
-[QueryType]
-public static class ProjectQueries {
-    [UseFirstOrDefault]
-    [UseProjection]
-    public static IQueryable<Project> GetProject(
-        Guid id,
-        ImpolarInsightContext db
-    ) => db.Projects.Where(p => p.Id == id);
-
-    [UsePaging]
-    [UseProjection]
-    [UseFiltering]
-    [UseSorting]
-    public static IQueryable<Project> GetProjects(
-        ImpolarInsightContext db
-    ) => db.Projects.OrderBy(p => p.Name);
-}
+// [QueryType]
+// public static class ProjectQueries {
+//
+//     [UseFirstOrDefault]
+//     [UseProjection]
+//     public static IQueryable<Project> GetProject(
+//         Guid id,
+//         ImpolarInsightContext db
+//     ) => db.Projects.Where(p => p.Id == id);
+//
+//     [UsePaging]
+//     [UseProjection]
+//     [UseFiltering]
+//     [UseSorting]
+//     public static IQueryable<Project> GetProjects(
+//         ImpolarInsightContext db
+//     ) => db.Projects.OrderBy(p => p.Name);
+// }
 
 [QueryType]
 public static class BoardQueries {
@@ -47,11 +48,11 @@ public static class BoardQueries {
         bool? displayOnly = null
     ) {
         var query = db.Boards.AsQueryable();
-        
+
         if (displayOnly == true) {
             query = query.Where(b => b.Display == true);
         }
-        
+
         return query.OrderBy(b => b.Name);
     }
 }
@@ -180,11 +181,11 @@ public static class RoadmapQueries {
         bool? displayOnly = null
     ) {
         var query = db.Roadmaps.AsQueryable();
-        
+
         if (displayOnly == true) {
             query = query.Where(r => r.Display == true);
         }
-        
+
         return query.OrderBy(r => r.Index);
     }
 }
