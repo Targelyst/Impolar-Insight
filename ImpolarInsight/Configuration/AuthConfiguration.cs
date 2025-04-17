@@ -12,4 +12,6 @@ public class AuthConfiguration {
     public required string Audience { get; set; }
 
     public string TenantClaim { get; set; } = "tenant";
+    public string RolesClaim { get; set; } = "feedback-roles";
+    public string AdminRole { get; set; } = "feedback-admin";
 }

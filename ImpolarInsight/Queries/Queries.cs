@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ImpolarInsight.Data;
 using ImpolarInsight.Models;
+using HotChocolate.Authorization;
 
 namespace ImpolarInsight.Queries;
 
@@ -39,6 +40,7 @@ public static class BoardQueries {
         ImpolarInsightContext db
     ) => db.Boards.Where(b => b.Url == url);
 
+    [Authorize(Policy = "user")]
     [UsePaging]
     [UseProjection]
     [UseFiltering]
@@ -74,6 +76,7 @@ public static class PostQueries {
         ImpolarInsightContext db
     ) => db.Posts.Where(p => p.Slug == slug && p.SlugId == slugId);
 
+    [Authorize(Policy = "admin")]
     [UsePaging]
     [UseProjection]
     [UseFiltering]
@@ -125,6 +128,7 @@ public static class VoteQueries {
         ImpolarInsightContext db
     ) => db.Votes.Where(v => v.Id == id);
 
+    [AllowAnonymous]
     [UsePaging]
     [UseProjection]
     [UseFiltering]

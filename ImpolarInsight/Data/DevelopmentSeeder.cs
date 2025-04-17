@@ -1,4 +1,5 @@
 using ImpolarInsight.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -24,7 +25,7 @@ public class DevelopmentSeeder {
             Guid devTenant1 = Guid.Parse("00000000-0000-0000-0000-000000000001");
 
             // Check if tenant exists first
-            var tenant = db.Tenants.FirstOrDefault(t => t.Id == devTenant1);
+            var tenant = db.Tenants.IgnoreQueryFilters().FirstOrDefault(t => t.Id == devTenant1);
             if (tenant == null) {
                 Console.WriteLine("Creating new tenant...");
                 tenant = new() {
@@ -43,7 +44,7 @@ public class DevelopmentSeeder {
             Guid devTenant2 = Guid.Parse("00000000-0000-0000-0000-000000000002");
 
             // Check if example tenant exists first
-            var exampleTenantEntity = db.Tenants.FirstOrDefault(t => t.Id == devTenant2);
+            var exampleTenantEntity = db.Tenants.IgnoreQueryFilters().FirstOrDefault(t => t.Id == devTenant2);
             if (exampleTenantEntity == null) {
                 Console.WriteLine("Creating new example tenant...");
                 exampleTenantEntity = new() {
@@ -59,7 +60,7 @@ public class DevelopmentSeeder {
             }
 
             // Seed site settings for example tenant if it doesn't exist
-            var exampleSettings = db.SiteSettings.FirstOrDefault(s => s.TenantId == devTenant2);
+            var exampleSettings = db.SiteSettings.IgnoreQueryFilters().FirstOrDefault(s => s.TenantId == devTenant2);
             Console.WriteLine($"Example site settings check result: {exampleSettings != null}");
             if (exampleSettings == null) {
                 Console.WriteLine("Creating example site settings...");
@@ -81,7 +82,7 @@ public class DevelopmentSeeder {
             }
 
             // Seed admin user for example tenant
-            var exampleAdminUser = db.Users.FirstOrDefault(u => u.Email == "admin@example.com" && u.TenantId == devTenant2);
+            var exampleAdminUser = db.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Email == "admin@example.com" && u.TenantId == devTenant2);
             Console.WriteLine($"Example admin user check result: {exampleAdminUser != null}");
             if (exampleAdminUser == null) {
                 Console.WriteLine("Creating example admin user...");
@@ -103,7 +104,7 @@ public class DevelopmentSeeder {
             }
 
             // Seed boards for example tenant
-            var exampleBoardsExist = db.Boards.Any(b => b.TenantId == devTenant2);
+            var exampleBoardsExist = db.Boards.IgnoreQueryFilters().Any(b => b.TenantId == devTenant2);
             Console.WriteLine($"Example boards exist: {exampleBoardsExist}");
             if (!exampleBoardsExist) {
                 Console.WriteLine("Creating example boards...");
@@ -139,7 +140,7 @@ public class DevelopmentSeeder {
             }
 
             // Seed roadmaps for example tenant
-            var exampleRoadmapsExist = db.Roadmaps.Any(r => r.TenantId == devTenant2);
+            var exampleRoadmapsExist = db.Roadmaps.IgnoreQueryFilters().Any(r => r.TenantId == devTenant2);
             Console.WriteLine($"Example roadmaps exist: {exampleRoadmapsExist}");
             if (!exampleRoadmapsExist) {
                 Console.WriteLine("Creating example roadmaps...");
@@ -175,13 +176,13 @@ public class DevelopmentSeeder {
             }
 
             // Seed some sample posts for example tenant if none exist
-            var examplePostsExist = db.Posts.Any(p => p.TenantId == devTenant2);
+            var examplePostsExist = db.Posts.IgnoreQueryFilters().Any(p => p.TenantId == devTenant2);
             Console.WriteLine($"Example posts exist: {examplePostsExist}");
             if (!examplePostsExist) {
                 Console.WriteLine("Creating example posts...");
-                var exampleFeatureBoard = db.Boards.FirstOrDefault(b => b.Name == "Example Feature Requests" && b.TenantId == devTenant2);
-                var exampleBugBoard = db.Boards.FirstOrDefault(b => b.Name == "Example Bug Reports" && b.TenantId == devTenant2);
-                var examplePlannedRoadmap = db.Roadmaps.FirstOrDefault(r => r.Name == "Example Planned" && r.TenantId == devTenant2);
+                var exampleFeatureBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Example Feature Requests" && b.TenantId == devTenant2);
+                var exampleBugBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Example Bug Reports" && b.TenantId == devTenant2);
+                var examplePlannedRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Example Planned" && r.TenantId == devTenant2);
 
                 Console.WriteLine($"Example feature board found: {exampleFeatureBoard != null}");
                 Console.WriteLine($"Example bug board found: {exampleBugBoard != null}");
@@ -260,7 +261,7 @@ public class DevelopmentSeeder {
             } else {
                 Console.WriteLine("Example posts already exist");
             }
-            var settings = db.SiteSettings.FirstOrDefault(s => s.TenantId == devTenant1);
+            var settings = db.SiteSettings.IgnoreQueryFilters().FirstOrDefault(s => s.TenantId == devTenant1);
             Console.WriteLine($"Site settings check result: {settings != null}");
             if (settings == null) {
                 Console.WriteLine("Creating site settings...");
@@ -282,7 +283,7 @@ public class DevelopmentSeeder {
             }
 
             // Seed admin user
-            var adminUser = db.Users.FirstOrDefault(u => u.Email == "admin@example.com" && u.TenantId == devTenant1);
+            var adminUser = db.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Email == "admin@example.com" && u.TenantId == devTenant1);
             Console.WriteLine($"Admin user check result: {adminUser != null}");
             if (adminUser == null) {
                 Console.WriteLine("Creating admin user...");
@@ -304,7 +305,7 @@ public class DevelopmentSeeder {
             }
 
             // Seed boards
-            var boardsExist = db.Boards.Any(b => b.TenantId == devTenant1);
+            var boardsExist = db.Boards.IgnoreQueryFilters().Any(b => b.TenantId == devTenant1);
             Console.WriteLine($"Boards exist: {boardsExist}");
             if (!boardsExist) {
                 Console.WriteLine("Creating boards...");
@@ -350,7 +351,7 @@ public class DevelopmentSeeder {
             }
 
             // Seed roadmaps
-            var roadmapsExist = db.Roadmaps.Any(r => r.TenantId == devTenant1);
+            var roadmapsExist = db.Roadmaps.IgnoreQueryFilters().Any(r => r.TenantId == devTenant1);
             Console.WriteLine($"Roadmaps exist: {roadmapsExist}");
             if (!roadmapsExist) {
                 Console.WriteLine("Creating roadmaps...");
@@ -396,13 +397,13 @@ public class DevelopmentSeeder {
             }
 
             // Seed some sample posts if none exist
-            var postsExist = db.Posts.Any(p => p.TenantId == devTenant1);
+            var postsExist = db.Posts.IgnoreQueryFilters().Any(p => p.TenantId == devTenant1);
             Console.WriteLine($"Posts exist: {postsExist}");
             if (!postsExist) {
                 Console.WriteLine("Creating posts...");
-                var featureBoard = db.Boards.FirstOrDefault(b => b.Name == "Feature Requests" && b.TenantId == devTenant1);
-                var bugBoard = db.Boards.FirstOrDefault(b => b.Name == "Bug Reports" && b.TenantId == devTenant1);
-                var plannedRoadmap = db.Roadmaps.FirstOrDefault(r => r.Name == "Planned" && r.TenantId == devTenant1);
+                var featureBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Feature Requests" && b.TenantId == devTenant1);
+                var bugBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Bug Reports" && b.TenantId == devTenant1);
+                var plannedRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Planned" && r.TenantId == devTenant1);
 
                 Console.WriteLine($"Feature board found: {featureBoard != null}");
                 Console.WriteLine($"Bug board found: {bugBoard != null}");

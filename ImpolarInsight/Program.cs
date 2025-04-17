@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ImpolarInsight.Auth;
 using ImpolarInsight.Configuration;
 using ImpolarInsight.Data;
-using ImpolarInsight.Models;
 using ImpolarInsight.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,42 +17,55 @@ builder.Services.AddOptions<AuthConfiguration>()
   .ValidateDataAnnotations()
   .ValidateOnStart();
 
+var authConfig = builder.Configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>()
+    ?? throw new Exception($"Could not get configuration section {AuthConfiguration.Section}");
+
 builder.Services.AddDbContextFactory<ImpolarInsightContext>(opt => {
     var c = builder.Configuration.GetSection(DatabaseConfiguration.Section).Get<DatabaseConfiguration>()
       ?? throw new Exception($"Could not get configuration section {DatabaseConfiguration.Section}");
 
     opt.UseNpgsql(
-        $"Host={c.Host};Port={c.Port};Database={c.Database};Username={c.User};Password={c.Password};IncludeErrorDetail=true"
-    ).EnableSensitiveDataLogging().EnableDetailedErrors();
+        $"Host={c.Host};Port={c.Port};Database={c.Database};Username={c.User};Password={c.Password}"
+    );
+
+    if (builder.Environment.IsDevelopment()) {
+        opt.EnableDetailedErrors().EnableSensitiveDataLogging();
+    }
 });
 
 builder.Services
-    .AddHttpContextAccessor()
-    .AddScoped<IAuthorizationHandler, HasTenantHandler>();
+    .AddHttpContextAccessor();
+// .AddScoped<IAuthorizationHandler, HasTenantHandler>();
 
 if (!builder.Environment.IsDevelopment()) {
     builder.Services
         .AddScoped<IUserService, UserService>()
         .AddAuthentication()
-        .AddJwtBearer("TENANTS", options => {
-            var c = builder.Configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>()
-                ?? throw new Exception($"Could not get configuration section {AuthConfiguration.Section}");
-
+        .AddJwtBearer(options => {
             options.RequireHttpsMetadata = false;
-            options.MetadataAddress = c.MetadataAddress;
+            options.MetadataAddress = authConfig.MetadataAddress;
 
             options.TokenValidationParameters = new TokenValidationParameters {
-                ValidAudience = c.Audience,
+                ValidAudience = authConfig.Audience,
+                RoleClaimType = authConfig.RolesClaim,
             };
         });
 
     builder.Services.AddAuthorization(opts => {
-        var tenantsAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder("TENANTS")
-            .AddRequirements(new HasTenantRequirement())
+        var tenantsUsersAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder()
+            .RequireClaim(authConfig.TenantClaim)
             .RequireAuthenticatedUser();
 
-        opts.DefaultPolicy = tenantsAuthorizationPolicyBuilder.Build();
-        opts.FallbackPolicy = opts.DefaultPolicy;
+        var tenantsAdminsAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder()
+            .RequireClaim(authConfig.TenantClaim)
+            .RequireRole(authConfig.AdminRole)
+            .RequireAuthenticatedUser();
+
+        opts.AddPolicy("user", tenantsUsersAuthorizationPolicyBuilder.Build());
+        opts.AddPolicy("admin", tenantsAdminsAuthorizationPolicyBuilder.Build());
+
+        // opts.DefaultPolicy = tenantsAdminsAuthorizationPolicyBuilder.Build();
+        // opts.FallbackPolicy = opts.DefaultPolicy;
     });
 } else {
     builder.Services.AddScoped<IUserService, DevelopmentUserService>();
@@ -71,14 +82,14 @@ builder.Services
     .AddMutationConventions(applyToAllMutations: true)
     .RegisterDbContextFactory<ImpolarInsightContext>()
     .AddTypes()
-    .AddType<Board>()
-    .AddType<Post>()
-    .AddType<Vote>()
-    .AddType<Roadmap>()
-    .AddType<User>()
-    .AddType<Comment>()
-    .AddType<PostActivity>()
-    .AddType<SiteSettings>()
+    // .AddType<Board>()
+    // .AddType<Post>()
+    // .AddType<Vote>()
+    // .AddType<Roadmap>()
+    // .AddType<User>()
+    // .AddType<Comment>()
+    // .AddType<PostActivity>()
+    // .AddType<SiteSettings>()
     .ModifyRequestOptions(
         opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment()
     )
