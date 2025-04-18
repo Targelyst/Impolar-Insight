@@ -44,6 +44,21 @@ public class Post : KeyedEntity
 }
 
 /// <summary>
+/// RoadmapCollection represents a group of related roadmap statuses
+/// </summary>
+public class RoadmapCollection : KeyedEntity
+{
+    public required string Name { get; set; }
+    public string? Description { get; set; }
+    public bool Display { get; set; } = true;
+    public int Index { get; set; }
+
+    public bool isPublic { get; set; } = true;
+    
+    public virtual ICollection<Roadmap> Roadmaps { get; set; } = new List<Roadmap>();
+}
+
+/// <summary>
 /// Vote represents a user's upvote on a post
 /// </summary>
 public class Vote : KeyedEntity
@@ -57,9 +72,6 @@ public class Vote : KeyedEntity
     public virtual Post Post { get; set; } = null!;
 }
 
-/// <summary>
-/// Roadmap represents a product roadmap with status categories
-/// </summary>
 public class Roadmap : KeyedEntity
 {
     public required string Name { get; set; }
@@ -67,6 +79,10 @@ public class Roadmap : KeyedEntity
     public required string Color { get; set; }
     public int Index { get; set; }
     public bool Display { get; set; } = false;
+    
+    // Add reference to parent RoadmapCollection
+    public Guid? RoadmapCollectionId { get; set; }
+    public virtual RoadmapCollection? RoadmapCollection { get; set; }
     
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 }

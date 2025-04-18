@@ -175,6 +175,47 @@ public class DevelopmentSeeder {
                 Console.WriteLine("Example roadmaps already exist");
             }
 
+            // In DevelopmentSeeder.Seed method, add this after the roadmaps section
+            // Seed roadmap collections
+            var roadmapCollectionsExist = db.RoadmapCollections.IgnoreQueryFilters().Any(rc => rc.TenantId == devTenant1);
+            Console.WriteLine($"Roadmap collections exist: {roadmapCollectionsExist}");
+            if (!roadmapCollectionsExist) {
+                Console.WriteLine("Creating roadmap collections...");
+                var collections = new[]
+                {
+                    new RoadmapCollection
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Product Roadmap",
+                        Description = "Our main product development roadmap",
+                        Index = 0,
+                        Display = true,
+                        TenantId = devTenant1
+                    },
+                    new RoadmapCollection
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Platform Roadmap",
+                        Description = "Our platform infrastructure roadmap",
+                        Index = 1,
+                        Display = true,
+                        TenantId = devTenant1
+                    }
+                };
+
+                db.RoadmapCollections.AddRange(collections);
+                db.SaveChanges();
+                Console.WriteLine("Roadmap collections created successfully");
+                
+                // Assign existing roadmaps to the first collection
+                var roadmaps = db.Roadmaps.IgnoreQueryFilters().Where(r => r.TenantId == devTenant1).ToList();
+                foreach (var roadmap in roadmaps) {
+                    roadmap.RoadmapCollectionId = collections[0].Id;
+                }
+                db.SaveChanges();
+                Console.WriteLine("Assigned existing roadmaps to collection successfully");
+            }
+
             // Seed some sample posts for example tenant if none exist
             var examplePostsExist = db.Posts.IgnoreQueryFilters().Any(p => p.TenantId == devTenant2);
             Console.WriteLine($"Example posts exist: {examplePostsExist}");
@@ -395,6 +436,7 @@ public class DevelopmentSeeder {
             } else {
                 Console.WriteLine("Roadmaps already exist");
             }
+            
 
             // Seed some sample posts if none exist
             var postsExist = db.Posts.IgnoreQueryFilters().Any(p => p.TenantId == devTenant1);

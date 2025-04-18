@@ -161,6 +161,53 @@ public static class VoteQueries {
 }
 
 [QueryType]
+public static class RoadmapCollectionQueries {
+    [UseFirstOrDefault]
+    [UseProjection]
+    public static IQueryable<RoadmapCollection> GetRoadmapCollection(
+        Guid id,
+        ImpolarInsightContext db
+    ) => db.RoadmapCollections.Where(rc => rc.Id == id);
+
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<RoadmapCollection> GetRoadmapCollections(
+        ImpolarInsightContext db,
+        bool? displayOnly = null
+    ) {
+        var query = db.RoadmapCollections.AsQueryable();
+
+        if (displayOnly == true) {
+            query = query.Where(rc => rc.Display == true);
+        }
+
+        return query.OrderBy(rc => rc.Index);
+    }
+
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<Roadmap> GetRoadmapsByCollection(
+        Guid collectionId,
+        ImpolarInsightContext db,
+        bool? displayOnly = null
+    ) {
+        var query = db.Roadmaps.Where(r => r.RoadmapCollectionId == collectionId);
+
+        if (displayOnly == true) {
+            query = query.Where(r => r.Display == true);
+        }
+
+        return query.OrderBy(r => r.Index);
+    }
+}
+
+
+
+[QueryType]
 public static class RoadmapQueries {
     [UseFirstOrDefault]
     [UseProjection]
@@ -303,3 +350,4 @@ public static class SiteSettingsQueries {
         ImpolarInsightContext db
     ) => db.SiteSettings;
 }
+

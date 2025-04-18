@@ -28,6 +28,8 @@ public class ImpolarInsightContext : DbContext {
     public DbSet<SiteSettings> SiteSettings { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
 
+    public DbSet<RoadmapCollection> RoadmapCollections { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         // Apply tenant filter to all entities derived from Entity
         modelBuilder.Entity<Board>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
@@ -39,6 +41,14 @@ public class ImpolarInsightContext : DbContext {
         modelBuilder.Entity<PostActivity>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<SiteSettings>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Tenant>().HasQueryFilter(e => e.Domain == userService.TenantDomain);
+        modelBuilder.Entity<RoadmapCollection>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+
+        modelBuilder.Entity<Roadmap>()
+            .HasOne(r => r.RoadmapCollection)
+            .WithMany(rc => rc.Roadmaps)
+            .HasForeignKey(r => r.RoadmapCollectionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
 
         // Configure relationships
         modelBuilder.Entity<Post>()

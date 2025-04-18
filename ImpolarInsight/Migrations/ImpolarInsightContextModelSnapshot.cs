@@ -195,6 +195,9 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("RoadmapCollectionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -204,9 +207,43 @@ namespace ImpolarInsight.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RoadmapCollectionId");
+
                     b.HasIndex("TenantId");
 
                     b.ToTable("Roadmaps");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.RoadmapCollection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Display")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("isPublic")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("RoadmapCollections");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.SiteSettings", b =>
@@ -445,6 +482,24 @@ namespace ImpolarInsight.Migrations
 
             modelBuilder.Entity("ImpolarInsight.Models.Roadmap", b =>
                 {
+                    b.HasOne("ImpolarInsight.Models.RoadmapCollection", "RoadmapCollection")
+                        .WithMany("Roadmaps")
+                        .HasForeignKey("RoadmapCollectionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoadmapCollection");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.RoadmapCollection", b =>
+                {
                     b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -523,6 +578,11 @@ namespace ImpolarInsight.Migrations
             modelBuilder.Entity("ImpolarInsight.Models.Roadmap", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.RoadmapCollection", b =>
+                {
+                    b.Navigation("Roadmaps");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.Tenant", b =>
