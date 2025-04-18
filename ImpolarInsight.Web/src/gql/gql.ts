@@ -14,10 +14,10 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query allProjects {\n    projects {\n      id\n      name\n    }\n  }\n": typeof types.AllProjectsDocument,
+    "\n  query getSiteSettings {\n\tsiteSettings {\n\t\tid\n\t\ttitle\n\t\tdescription\n\t\tlogo\n\t\ticon\n\t\taccentColor\n\t\tgoogleAnalyticsId\n\t\tisPoweredBy\n\t\tallowSignup\n\t\tdeveloperMode\n\t\tlabs\n\t\ttheme\n\t}\n  }\n": typeof types.GetSiteSettingsDocument,
 };
 const documents: Documents = {
-    "\n  query allProjects {\n    projects {\n      id\n      name\n    }\n  }\n": types.AllProjectsDocument,
+    "\n  query getSiteSettings {\n\tsiteSettings {\n\t\tid\n\t\ttitle\n\t\tdescription\n\t\tlogo\n\t\ticon\n\t\taccentColor\n\t\tgoogleAnalyticsId\n\t\tisPoweredBy\n\t\tallowSignup\n\t\tdeveloperMode\n\t\tlabs\n\t\ttheme\n\t}\n  }\n": types.GetSiteSettingsDocument,
 };
 
 /**
@@ -37,7 +37,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query allProjects {\n    projects {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query allProjects {\n    projects {\n      id\n      name\n    }\n  }\n"];
+export function graphql(source: "\n  query getSiteSettings {\n\tsiteSettings {\n\t\tid\n\t\ttitle\n\t\tdescription\n\t\tlogo\n\t\ticon\n\t\taccentColor\n\t\tgoogleAnalyticsId\n\t\tisPoweredBy\n\t\tallowSignup\n\t\tdeveloperMode\n\t\tlabs\n\t\ttheme\n\t}\n  }\n"): (typeof documents)["\n  query getSiteSettings {\n\tsiteSettings {\n\t\tid\n\t\ttitle\n\t\tdescription\n\t\tlogo\n\t\ticon\n\t\taccentColor\n\t\tgoogleAnalyticsId\n\t\tisPoweredBy\n\t\tallowSignup\n\t\tdeveloperMode\n\t\tlabs\n\t\ttheme\n\t}\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -8,24 +8,81 @@
   body {
     font-family: "Poppins", sans-serif;
   }
+  
+  /* Define default theme variables - these will be overridden by JS */
+  :root {
+    --color-impolar-primary: #5300E8;
+    --color-impolar-primary-text: #FEFEFE;
+    --color-impolar-secondary: #D5CDFF;
+    --color-impolar-secondary-text: #6B12FF;
+    --color-impolar-bg: #0E0E11;
+    --color-impolar-bg-text: #FAFAFA;
+    --color-impolar-bg-surface: #18181B;
+    --color-impolar-bg-surface-text: #FAFAFA;
+    --color-impolar-bg-highlight: #28252D;
+    --color-impolar-bg-highlight-text: #FAFAFA;
+  }
 }
 
 @theme {
-  --color-impolar-primary: #5300E8;
-  --color-impolar-primary-text: #FEFEFE;
-  --color-impolar-secondary: #D5CDFF;
-  --color-impolar-secondary-text: #6B12FF;
-  --color-impolar-bg: #0E0E11;
-  --color-impolar-bg-text: #FAFAFA;
-  --color-impolar-bg-surface: #18181B;
-  --color-impolar-bg-surface-text: #FAFAFA;
-  --color-impolar-bg-highlight: #28252D;
-  --color-impolar-bg-highlight-text: #FAFAFA;
+  /* These will now reference the root variables that are dynamically updated */
+  --color-impolar-primary: var(--color-impolar-primary);
+  --color-impolar-primary-text: var(--color-impolar-primary-text);
+  --color-impolar-secondary: var(--color-impolar-secondary);
+  --color-impolar-secondary-text: var(--color-impolar-secondary-text);
+  --color-impolar-bg: var(--color-impolar-bg);
+  --color-impolar-bg-text: var(--color-impolar-bg-text);
+  --color-impolar-bg-surface: var(--color-impolar-bg-surface);
+  --color-impolar-bg-surface-text: var(--color-impolar-bg-surface-text);
+  --color-impolar-bg-highlight: var(--color-impolar-bg-highlight);
+  --color-impolar-bg-highlight-text: var(--color-impolar-bg-highlight-text);
 }
 
 @utility impolar-* {
   background-color: --value(--color-impolar-*);
   color: --value(--color-impolar-*-text);
+}
+
+/* Add theme utility classes for easy access */
+.bg-primary {
+  background-color: var(--color-impolar-primary);
+  color: var(--color-impolar-primary-text);
+}
+
+.bg-secondary {
+  background-color: var(--color-impolar-secondary);
+  color: var(--color-impolar-secondary-text);
+}
+
+.bg-main {
+  background-color: var(--color-impolar-bg);
+  color: var(--color-impolar-bg-text);
+}
+
+.bg-surface {
+  background-color: var(--color-impolar-bg-surface);
+  color: var(--color-impolar-bg-surface-text);
+}
+
+.bg-highlight {
+  background-color: var(--color-impolar-bg-highlight);
+  color: var(--color-impolar-bg-highlight-text);
+}
+
+.text-primary {
+  color: var(--color-impolar-primary);
+}
+
+.text-secondary {
+  color: var(--color-impolar-secondary);
+}
+
+.border-primary {
+  border-color: var(--color-impolar-primary);
+}
+
+.border-secondary {
+  border-color: var(--color-impolar-secondary);
 }
 
 @keyframes fadeIn {

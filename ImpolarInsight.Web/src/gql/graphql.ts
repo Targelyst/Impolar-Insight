@@ -14,35 +14,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** The `Date` scalar represents an ISO-8601 compliant date type. */
-  Date: { input: any; output: any; }
-  /** The `DateTime` scalar represents an ISO-8601 compliant date time type. */
-  DateTime: { input: any; output: any; }
   UUID: { input: any; output: any; }
-};
-
-export type AddEmailTransportInput = {
-  emailConfigurationId: Scalars['UUID']['input'];
-  host: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-  port: Scalars['Int']['input'];
-  senderAddresses?: InputMaybe<Array<Scalars['String']['input']>>;
-  user: Scalars['String']['input'];
-};
-
-export type AddEmailTransportPayload = {
-  __typename?: 'AddEmailTransportPayload';
-  emailTransport?: Maybe<Array<EmailTransport>>;
-};
-
-export type AddEmailTransportSenderAddressInput = {
-  address: Scalars['String']['input'];
-  emailTransportId: Scalars['UUID']['input'];
-};
-
-export type AddEmailTransportSenderAddressPayload = {
-  __typename?: 'AddEmailTransportSenderAddressPayload';
-  emailTransportSenderAddress?: Maybe<Array<EmailTransportSenderAddress>>;
 };
 
 /** Defines when a policy shall be executed. */
@@ -55,212 +27,48 @@ export enum ApplyPolicy {
   Validation = 'VALIDATION'
 }
 
-export type BooleanOperationFilterInput = {
-  eq?: InputMaybe<Scalars['Boolean']['input']>;
-  neq?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type DateTimeOperationFilterInput = {
-  eq?: InputMaybe<Scalars['DateTime']['input']>;
-  gt?: InputMaybe<Scalars['DateTime']['input']>;
-  gte?: InputMaybe<Scalars['DateTime']['input']>;
-  in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']['input']>>>;
-  lt?: InputMaybe<Scalars['DateTime']['input']>;
-  lte?: InputMaybe<Scalars['DateTime']['input']>;
-  neq?: InputMaybe<Scalars['DateTime']['input']>;
-  ngt?: InputMaybe<Scalars['DateTime']['input']>;
-  ngte?: InputMaybe<Scalars['DateTime']['input']>;
-  nin?: InputMaybe<Array<InputMaybe<Scalars['DateTime']['input']>>>;
-  nlt?: InputMaybe<Scalars['DateTime']['input']>;
-  nlte?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type EmailConfiguration = {
-  __typename?: 'EmailConfiguration';
-  id: Scalars['UUID']['output'];
-  project: Project;
-  projectId: Scalars['UUID']['output'];
-  properties: Array<EmailContactProperty>;
-  transports: Array<EmailTransport>;
-};
-
-
-export type EmailConfigurationPropertiesArgs = {
-  order?: InputMaybe<Array<EmailContactPropertySortInput>>;
-  where?: InputMaybe<EmailContactPropertyFilterInput>;
-};
-
-
-export type EmailConfigurationTransportsArgs = {
-  order?: InputMaybe<Array<EmailTransportSortInput>>;
-  where?: InputMaybe<EmailTransportFilterInput>;
-};
-
-export type EmailConfigurationFilterInput = {
-  and?: InputMaybe<Array<EmailConfigurationFilterInput>>;
-  id?: InputMaybe<UuidOperationFilterInput>;
-  or?: InputMaybe<Array<EmailConfigurationFilterInput>>;
-  project?: InputMaybe<ProjectFilterInput>;
-  projectId?: InputMaybe<UuidOperationFilterInput>;
-  properties?: InputMaybe<ListFilterInputTypeOfEmailContactPropertyFilterInput>;
-  transports?: InputMaybe<ListFilterInputTypeOfEmailTransportFilterInput>;
-};
-
-export type EmailConfigurationSortInput = {
-  id?: InputMaybe<SortEnumType>;
-  project?: InputMaybe<ProjectSortInput>;
-  projectId?: InputMaybe<SortEnumType>;
-};
-
-export type EmailContact = {
-  __typename?: 'EmailContact';
-  createdAt: Scalars['DateTime']['output'];
-  emailAddress: Scalars['String']['output'];
-  emailConfiguration: EmailConfiguration;
-  emailConfigurationId: Scalars['UUID']['output'];
-  id: Scalars['UUID']['output'];
-  properties: Array<EmailContactPropertyValue>;
-};
-
-export type EmailContactChoiceProperty = EmailContactProperty & {
-  __typename?: 'EmailContactChoiceProperty';
-  choices: Array<Scalars['String']['output']>;
-  emailConfiguration: EmailConfiguration;
-  emailConfigurationId: Scalars['UUID']['output'];
+export type Board = {
+  __typename?: 'Board';
+  color: Scalars['String']['output'];
+  display: Scalars['Boolean']['output'];
   id: Scalars['UUID']['output'];
   name: Scalars['String']['output'];
-  show: Scalars['Boolean']['output'];
-  values: Array<EmailContactPropertyValue>;
+  posts: Array<Post>;
+  tenant: Tenant;
+  url: Scalars['String']['output'];
+  viewVoters: Scalars['Boolean']['output'];
 };
 
-export type EmailContactChoicePropertyValue = EmailContactPropertyValue & {
-  __typename?: 'EmailContactChoicePropertyValue';
-  contact: EmailContact;
-  contactId: Scalars['UUID']['output'];
-  property: EmailContactChoiceProperty;
-  propertyId: Scalars['UUID']['output'];
-  value: Scalars['String']['output'];
-};
-
-export type EmailContactDateProperty = EmailContactProperty & {
-  __typename?: 'EmailContactDateProperty';
-  emailConfiguration: EmailConfiguration;
-  emailConfigurationId: Scalars['UUID']['output'];
-  id: Scalars['UUID']['output'];
-  name: Scalars['String']['output'];
-  show: Scalars['Boolean']['output'];
-  values: Array<EmailContactPropertyValue>;
-};
-
-export type EmailContactDatePropertyValue = EmailContactPropertyValue & {
-  __typename?: 'EmailContactDatePropertyValue';
-  contact: EmailContact;
-  contactId: Scalars['UUID']['output'];
-  property: EmailContactDateProperty;
-  propertyId: Scalars['UUID']['output'];
-  value: Scalars['Date']['output'];
-};
-
-export type EmailContactFilterInput = {
-  and?: InputMaybe<Array<EmailContactFilterInput>>;
-  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
-  emailAddress?: InputMaybe<StringOperationFilterInput>;
-  emailConfiguration?: InputMaybe<EmailConfigurationFilterInput>;
-  emailConfigurationId?: InputMaybe<UuidOperationFilterInput>;
-  id?: InputMaybe<UuidOperationFilterInput>;
-  or?: InputMaybe<Array<EmailContactFilterInput>>;
-  properties?: InputMaybe<ListFilterInputTypeOfEmailContactPropertyValueFilterInput>;
-};
-
-export type EmailContactNumberProperty = EmailContactProperty & {
-  __typename?: 'EmailContactNumberProperty';
-  emailConfiguration: EmailConfiguration;
-  emailConfigurationId: Scalars['UUID']['output'];
-  id: Scalars['UUID']['output'];
-  name: Scalars['String']['output'];
-  show: Scalars['Boolean']['output'];
-  values: Array<EmailContactPropertyValue>;
-};
-
-export type EmailContactNumberPropertyValue = EmailContactPropertyValue & {
-  __typename?: 'EmailContactNumberPropertyValue';
-  contact: EmailContact;
-  contactId: Scalars['UUID']['output'];
-  property: EmailContactNumberProperty;
-  propertyId: Scalars['UUID']['output'];
-  value: Scalars['Float']['output'];
-};
-
-export type EmailContactProperty = {
-  emailConfiguration: EmailConfiguration;
-  emailConfigurationId: Scalars['UUID']['output'];
-  id: Scalars['UUID']['output'];
-  name: Scalars['String']['output'];
-  show: Scalars['Boolean']['output'];
-  values: Array<EmailContactPropertyValue>;
-};
-
-export type EmailContactPropertyFilterInput = {
-  and?: InputMaybe<Array<EmailContactPropertyFilterInput>>;
-  emailConfiguration?: InputMaybe<EmailConfigurationFilterInput>;
-  emailConfigurationId?: InputMaybe<UuidOperationFilterInput>;
+export type BoardFilterInput = {
+  and?: InputMaybe<Array<BoardFilterInput>>;
+  color?: InputMaybe<StringOperationFilterInput>;
+  display?: InputMaybe<BooleanOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
-  or?: InputMaybe<Array<EmailContactPropertyFilterInput>>;
-  show?: InputMaybe<BooleanOperationFilterInput>;
-  values?: InputMaybe<ListFilterInputTypeOfEmailContactPropertyValueFilterInput>;
+  or?: InputMaybe<Array<BoardFilterInput>>;
+  posts?: InputMaybe<ListFilterInputTypeOfPostFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
+  url?: InputMaybe<StringOperationFilterInput>;
+  viewVoters?: InputMaybe<BooleanOperationFilterInput>;
 };
 
-export type EmailContactPropertySortInput = {
-  emailConfiguration?: InputMaybe<EmailConfigurationSortInput>;
-  emailConfigurationId?: InputMaybe<SortEnumType>;
+export type BoardSortInput = {
+  color?: InputMaybe<SortEnumType>;
+  display?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   name?: InputMaybe<SortEnumType>;
-  show?: InputMaybe<SortEnumType>;
-};
-
-export type EmailContactPropertyValue = {
-  contact: EmailContact;
-  contactId: Scalars['UUID']['output'];
-  property: EmailContactProperty;
-  propertyId: Scalars['UUID']['output'];
-};
-
-export type EmailContactPropertyValueFilterInput = {
-  and?: InputMaybe<Array<EmailContactPropertyValueFilterInput>>;
-  contact?: InputMaybe<EmailContactFilterInput>;
-  contactId?: InputMaybe<UuidOperationFilterInput>;
-  or?: InputMaybe<Array<EmailContactPropertyValueFilterInput>>;
-  property?: InputMaybe<EmailContactPropertyFilterInput>;
-  propertyId?: InputMaybe<UuidOperationFilterInput>;
-};
-
-export type EmailContactStringProperty = EmailContactProperty & {
-  __typename?: 'EmailContactStringProperty';
-  emailConfiguration: EmailConfiguration;
-  emailConfigurationId: Scalars['UUID']['output'];
-  id: Scalars['UUID']['output'];
-  name: Scalars['String']['output'];
-  show: Scalars['Boolean']['output'];
-  values: Array<EmailContactPropertyValue>;
-};
-
-export type EmailContactStringPropertyValue = EmailContactPropertyValue & {
-  __typename?: 'EmailContactStringPropertyValue';
-  contact: EmailContact;
-  contactId: Scalars['UUID']['output'];
-  property: EmailContactStringProperty;
-  propertyId: Scalars['UUID']['output'];
-  value: Scalars['String']['output'];
+  tenant?: InputMaybe<TenantSortInput>;
+  url?: InputMaybe<SortEnumType>;
+  viewVoters?: InputMaybe<SortEnumType>;
 };
 
 /** A connection to a list of items. */
-export type EmailContactsConnection = {
-  __typename?: 'EmailContactsConnection';
+export type BoardsConnection = {
+  __typename?: 'BoardsConnection';
   /** A list of edges. */
-  edges?: Maybe<Array<EmailContactsEdge>>;
+  edges?: Maybe<Array<BoardsEdge>>;
   /** A flattened list of the nodes. */
-  nodes?: Maybe<Array<EmailContact>>;
+  nodes?: Maybe<Array<Board>>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** Identifies the total count of items in the connection. */
@@ -268,74 +76,183 @@ export type EmailContactsConnection = {
 };
 
 /** An edge in a connection. */
-export type EmailContactsEdge = {
-  __typename?: 'EmailContactsEdge';
+export type BoardsEdge = {
+  __typename?: 'BoardsEdge';
   /** A cursor for use in pagination. */
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
-  node: EmailContact;
+  node: Board;
 };
 
-export type EmailTransport = {
-  __typename?: 'EmailTransport';
-  emailConfiguration: EmailConfiguration;
-  emailConfigurationId: Scalars['UUID']['output'];
-  host: Scalars['String']['output'];
+export type BooleanOperationFilterInput = {
+  eq?: InputMaybe<Scalars['Boolean']['input']>;
+  neq?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type Comment = {
+  __typename?: 'Comment';
+  activityId: Scalars['UUID']['output'];
+  body: Scalars['String']['output'];
   id: Scalars['UUID']['output'];
-  port: Scalars['Int']['output'];
-  senderAddresses: Array<EmailTransportSenderAddress>;
-  user: Scalars['String']['output'];
+  isEdited: Scalars['Boolean']['output'];
+  isInternal: Scalars['Boolean']['output'];
+  isSpam: Scalars['Boolean']['output'];
+  parent?: Maybe<Comment>;
+  parentId?: Maybe<Scalars['UUID']['output']>;
+  tenant: Tenant;
 };
 
-
-export type EmailTransportSenderAddressesArgs = {
-  order?: InputMaybe<Array<EmailTransportSenderAddressSortInput>>;
-  where?: InputMaybe<EmailTransportSenderAddressFilterInput>;
-};
-
-export type EmailTransportFilterInput = {
-  and?: InputMaybe<Array<EmailTransportFilterInput>>;
-  emailConfiguration?: InputMaybe<EmailConfigurationFilterInput>;
-  emailConfigurationId?: InputMaybe<UuidOperationFilterInput>;
-  host?: InputMaybe<StringOperationFilterInput>;
+export type CommentFilterInput = {
+  activityId?: InputMaybe<UuidOperationFilterInput>;
+  and?: InputMaybe<Array<CommentFilterInput>>;
+  body?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
-  or?: InputMaybe<Array<EmailTransportFilterInput>>;
-  port?: InputMaybe<IntOperationFilterInput>;
-  senderAddresses?: InputMaybe<ListFilterInputTypeOfEmailTransportSenderAddressFilterInput>;
-  user?: InputMaybe<StringOperationFilterInput>;
+  isEdited?: InputMaybe<BooleanOperationFilterInput>;
+  isInternal?: InputMaybe<BooleanOperationFilterInput>;
+  isSpam?: InputMaybe<BooleanOperationFilterInput>;
+  or?: InputMaybe<Array<CommentFilterInput>>;
+  parent?: InputMaybe<CommentFilterInput>;
+  parentId?: InputMaybe<UuidOperationFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
 };
 
-export type EmailTransportSenderAddress = {
-  __typename?: 'EmailTransportSenderAddress';
-  address: Scalars['String']['output'];
-  id: Scalars['UUID']['output'];
-  transport: EmailTransport;
-  transportId: Scalars['UUID']['output'];
-};
-
-export type EmailTransportSenderAddressFilterInput = {
-  address?: InputMaybe<StringOperationFilterInput>;
-  and?: InputMaybe<Array<EmailTransportSenderAddressFilterInput>>;
-  id?: InputMaybe<UuidOperationFilterInput>;
-  or?: InputMaybe<Array<EmailTransportSenderAddressFilterInput>>;
-  transport?: InputMaybe<EmailTransportFilterInput>;
-  transportId?: InputMaybe<UuidOperationFilterInput>;
-};
-
-export type EmailTransportSenderAddressSortInput = {
-  address?: InputMaybe<SortEnumType>;
+export type CommentSortInput = {
+  activityId?: InputMaybe<SortEnumType>;
+  body?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
-  transport?: InputMaybe<EmailTransportSortInput>;
-  transportId?: InputMaybe<SortEnumType>;
+  isEdited?: InputMaybe<SortEnumType>;
+  isInternal?: InputMaybe<SortEnumType>;
+  isSpam?: InputMaybe<SortEnumType>;
+  parent?: InputMaybe<CommentSortInput>;
+  parentId?: InputMaybe<SortEnumType>;
+  tenant?: InputMaybe<TenantSortInput>;
 };
 
-export type EmailTransportSortInput = {
-  emailConfiguration?: InputMaybe<EmailConfigurationSortInput>;
-  emailConfigurationId?: InputMaybe<SortEnumType>;
-  host?: InputMaybe<SortEnumType>;
-  id?: InputMaybe<SortEnumType>;
-  port?: InputMaybe<SortEnumType>;
-  user?: InputMaybe<SortEnumType>;
+/** A connection to a list of items. */
+export type CommentsByParentConnection = {
+  __typename?: 'CommentsByParentConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<CommentsByParentEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Comment>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type CommentsByParentEdge = {
+  __typename?: 'CommentsByParentEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Comment;
+};
+
+/** A connection to a list of items. */
+export type CommentsConnection = {
+  __typename?: 'CommentsConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<CommentsEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Comment>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type CommentsEdge = {
+  __typename?: 'CommentsEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Comment;
+};
+
+export type CreateBoardInput = {
+  color: Scalars['String']['input'];
+  display?: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+  viewVoters?: Scalars['Boolean']['input'];
+};
+
+export type CreateCommentInput = {
+  authorId: Scalars['UUID']['input'];
+  body: Scalars['String']['input'];
+  isInternal?: Scalars['Boolean']['input'];
+  parentId?: InputMaybe<Scalars['UUID']['input']>;
+  postId: Scalars['UUID']['input'];
+};
+
+export type CreatePostActivityInput = {
+  authorId: Scalars['UUID']['input'];
+  postId: Scalars['UUID']['input'];
+  type: Scalars['String']['input'];
+};
+
+export type CreatePostInput = {
+  boardId?: InputMaybe<Scalars['UUID']['input']>;
+  contentMarkdown?: InputMaybe<Scalars['String']['input']>;
+  roadmapId?: InputMaybe<Scalars['UUID']['input']>;
+  slug: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  userId: Scalars['UUID']['input'];
+};
+
+export type CreateRoadmapCollectionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  display?: Scalars['Boolean']['input'];
+  index?: Scalars['Int']['input'];
+  isPublic?: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type CreateRoadmapInput = {
+  color: Scalars['String']['input'];
+  display?: Scalars['Boolean']['input'];
+  index: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  roadmapCollectionId?: InputMaybe<Scalars['UUID']['input']>;
+  url: Scalars['String']['input'];
+};
+
+export type CreateSiteSettingsInput = {
+  accentColor?: InputMaybe<Scalars['String']['input']>;
+  allowSignup?: Scalars['Boolean']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  developerMode?: Scalars['Boolean']['input'];
+  googleAnalyticsId?: InputMaybe<Scalars['String']['input']>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  isPoweredBy?: Scalars['Boolean']['input'];
+  labs?: InputMaybe<Scalars['String']['input']>;
+  logo?: InputMaybe<Scalars['String']['input']>;
+  theme?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateTenantInput = {
+  domain: Scalars['String']['input'];
+};
+
+export type CreateUserInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  email: Scalars['String']['input'];
+  isBlocked?: Scalars['Boolean']['input'];
+  isOwner?: Scalars['Boolean']['input'];
+  isVerified?: Scalars['Boolean']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
+export type CreateVoteInput = {
+  postId: Scalars['UUID']['input'];
+  userId: Scalars['UUID']['input'];
 };
 
 export type IntOperationFilterInput = {
@@ -353,54 +270,46 @@ export type IntOperationFilterInput = {
   nlte?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type ListFilterInputTypeOfEmailContactPropertyFilterInput = {
-  all?: InputMaybe<EmailContactPropertyFilterInput>;
+export type ListFilterInputTypeOfBoardFilterInput = {
+  all?: InputMaybe<BoardFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<EmailContactPropertyFilterInput>;
-  some?: InputMaybe<EmailContactPropertyFilterInput>;
+  none?: InputMaybe<BoardFilterInput>;
+  some?: InputMaybe<BoardFilterInput>;
 };
 
-export type ListFilterInputTypeOfEmailContactPropertyValueFilterInput = {
-  all?: InputMaybe<EmailContactPropertyValueFilterInput>;
+export type ListFilterInputTypeOfPostActivityFilterInput = {
+  all?: InputMaybe<PostActivityFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<EmailContactPropertyValueFilterInput>;
-  some?: InputMaybe<EmailContactPropertyValueFilterInput>;
+  none?: InputMaybe<PostActivityFilterInput>;
+  some?: InputMaybe<PostActivityFilterInput>;
 };
 
-export type ListFilterInputTypeOfEmailTransportFilterInput = {
-  all?: InputMaybe<EmailTransportFilterInput>;
+export type ListFilterInputTypeOfPostFilterInput = {
+  all?: InputMaybe<PostFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<EmailTransportFilterInput>;
-  some?: InputMaybe<EmailTransportFilterInput>;
+  none?: InputMaybe<PostFilterInput>;
+  some?: InputMaybe<PostFilterInput>;
 };
 
-export type ListFilterInputTypeOfEmailTransportSenderAddressFilterInput = {
-  all?: InputMaybe<EmailTransportSenderAddressFilterInput>;
+export type ListFilterInputTypeOfRoadmapFilterInput = {
+  all?: InputMaybe<RoadmapFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<EmailTransportSenderAddressFilterInput>;
-  some?: InputMaybe<EmailTransportSenderAddressFilterInput>;
+  none?: InputMaybe<RoadmapFilterInput>;
+  some?: InputMaybe<RoadmapFilterInput>;
 };
 
-export type Mutation = {
-  __typename?: 'Mutation';
-  addEmailTransport: AddEmailTransportPayload;
-  addEmailTransportSenderAddress: AddEmailTransportSenderAddressPayload;
-  updateProject: UpdateProjectPayload;
+export type ListFilterInputTypeOfSiteSettingsFilterInput = {
+  all?: InputMaybe<SiteSettingsFilterInput>;
+  any?: InputMaybe<Scalars['Boolean']['input']>;
+  none?: InputMaybe<SiteSettingsFilterInput>;
+  some?: InputMaybe<SiteSettingsFilterInput>;
 };
 
-
-export type MutationAddEmailTransportArgs = {
-  input: AddEmailTransportInput;
-};
-
-
-export type MutationAddEmailTransportSenderAddressArgs = {
-  input: AddEmailTransportSenderAddressInput;
-};
-
-
-export type MutationUpdateProjectArgs = {
-  input: UpdateProjectInput;
+export type ListFilterInputTypeOfVoteFilterInput = {
+  all?: InputMaybe<VoteFilterInput>;
+  any?: InputMaybe<Scalars['Boolean']['input']>;
+  none?: InputMaybe<VoteFilterInput>;
+  some?: InputMaybe<VoteFilterInput>;
 };
 
 /** Information about pagination in a connection. */
@@ -416,58 +325,701 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
-export type Project = {
-  __typename?: 'Project';
-  emailConfiguration?: Maybe<EmailConfiguration>;
+export type Post = {
+  __typename?: 'Post';
+  activities: Array<PostActivity>;
+  board?: Maybe<Board>;
+  boardId?: Maybe<Scalars['UUID']['output']>;
+  contentMarkdown?: Maybe<Scalars['String']['output']>;
   id: Scalars['UUID']['output'];
-  name: Scalars['String']['output'];
+  roadmap?: Maybe<Roadmap>;
+  roadmapId?: Maybe<Scalars['UUID']['output']>;
+  slug: Scalars['String']['output'];
+  slugId: Scalars['String']['output'];
+  tenant: Tenant;
+  title: Scalars['String']['output'];
+  userId: Scalars['UUID']['output'];
+  votes: Array<Vote>;
 };
 
-export type ProjectFilterInput = {
-  and?: InputMaybe<Array<ProjectFilterInput>>;
-  emailConfiguration?: InputMaybe<EmailConfigurationFilterInput>;
+/** A connection to a list of items. */
+export type PostActivitiesByAuthorConnection = {
+  __typename?: 'PostActivitiesByAuthorConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<PostActivitiesByAuthorEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<PostActivity>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type PostActivitiesByAuthorEdge = {
+  __typename?: 'PostActivitiesByAuthorEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: PostActivity;
+};
+
+/** A connection to a list of items. */
+export type PostActivitiesByPostConnection = {
+  __typename?: 'PostActivitiesByPostConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<PostActivitiesByPostEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<PostActivity>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type PostActivitiesByPostEdge = {
+  __typename?: 'PostActivitiesByPostEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: PostActivity;
+};
+
+/** A connection to a list of items. */
+export type PostActivitiesConnection = {
+  __typename?: 'PostActivitiesConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<PostActivitiesEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<PostActivity>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type PostActivitiesEdge = {
+  __typename?: 'PostActivitiesEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: PostActivity;
+};
+
+export type PostActivity = {
+  __typename?: 'PostActivity';
+  authorId: Scalars['UUID']['output'];
+  comment?: Maybe<Comment>;
+  commentId?: Maybe<Scalars['UUID']['output']>;
+  id: Scalars['UUID']['output'];
+  postId: Scalars['UUID']['output'];
+  tenant: Tenant;
+  type: Scalars['String']['output'];
+};
+
+export type PostActivityFilterInput = {
+  and?: InputMaybe<Array<PostActivityFilterInput>>;
+  authorId?: InputMaybe<UuidOperationFilterInput>;
+  comment?: InputMaybe<CommentFilterInput>;
+  commentId?: InputMaybe<UuidOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
-  name?: InputMaybe<StringOperationFilterInput>;
-  or?: InputMaybe<Array<ProjectFilterInput>>;
+  or?: InputMaybe<Array<PostActivityFilterInput>>;
+  postId?: InputMaybe<UuidOperationFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
+  type?: InputMaybe<StringOperationFilterInput>;
 };
 
-export type ProjectSortInput = {
-  emailConfiguration?: InputMaybe<EmailConfigurationSortInput>;
+export type PostActivitySortInput = {
+  authorId?: InputMaybe<SortEnumType>;
+  comment?: InputMaybe<CommentSortInput>;
+  commentId?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
-  name?: InputMaybe<SortEnumType>;
+  postId?: InputMaybe<SortEnumType>;
+  tenant?: InputMaybe<TenantSortInput>;
+  type?: InputMaybe<SortEnumType>;
+};
+
+export type PostFilterInput = {
+  activities?: InputMaybe<ListFilterInputTypeOfPostActivityFilterInput>;
+  and?: InputMaybe<Array<PostFilterInput>>;
+  board?: InputMaybe<BoardFilterInput>;
+  boardId?: InputMaybe<UuidOperationFilterInput>;
+  contentMarkdown?: InputMaybe<StringOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  or?: InputMaybe<Array<PostFilterInput>>;
+  roadmap?: InputMaybe<RoadmapFilterInput>;
+  roadmapId?: InputMaybe<UuidOperationFilterInput>;
+  slug?: InputMaybe<StringOperationFilterInput>;
+  slugId?: InputMaybe<StringOperationFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
+  title?: InputMaybe<StringOperationFilterInput>;
+  userId?: InputMaybe<UuidOperationFilterInput>;
+  votes?: InputMaybe<ListFilterInputTypeOfVoteFilterInput>;
+};
+
+export type PostSortInput = {
+  board?: InputMaybe<BoardSortInput>;
+  boardId?: InputMaybe<SortEnumType>;
+  contentMarkdown?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  roadmap?: InputMaybe<RoadmapSortInput>;
+  roadmapId?: InputMaybe<SortEnumType>;
+  slug?: InputMaybe<SortEnumType>;
+  slugId?: InputMaybe<SortEnumType>;
+  tenant?: InputMaybe<TenantSortInput>;
+  title?: InputMaybe<SortEnumType>;
+  userId?: InputMaybe<SortEnumType>;
+};
+
+/** A connection to a list of items. */
+export type PostsByBoardConnection = {
+  __typename?: 'PostsByBoardConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<PostsByBoardEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Post>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type PostsByBoardEdge = {
+  __typename?: 'PostsByBoardEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Post;
+};
+
+/** A connection to a list of items. */
+export type PostsByRoadmapConnection = {
+  __typename?: 'PostsByRoadmapConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<PostsByRoadmapEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Post>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type PostsByRoadmapEdge = {
+  __typename?: 'PostsByRoadmapEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Post;
+};
+
+/** A connection to a list of items. */
+export type PostsByUserConnection = {
+  __typename?: 'PostsByUserConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<PostsByUserEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Post>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type PostsByUserEdge = {
+  __typename?: 'PostsByUserEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Post;
+};
+
+/** A connection to a list of items. */
+export type PostsConnection = {
+  __typename?: 'PostsConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<PostsEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Post>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type PostsEdge = {
+  __typename?: 'PostsEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Post;
 };
 
 export type Query = {
   __typename?: 'Query';
-  emailConfiguration?: Maybe<EmailConfiguration>;
-  emailContacts?: Maybe<EmailContactsConnection>;
-  project?: Maybe<Project>;
-  projects: Array<Project>;
+  board?: Maybe<Board>;
+  boardByUrl?: Maybe<Board>;
+  boards?: Maybe<BoardsConnection>;
+  comment?: Maybe<Comment>;
+  comments?: Maybe<CommentsConnection>;
+  commentsByParent?: Maybe<CommentsByParentConnection>;
+  post?: Maybe<Post>;
+  postActivities?: Maybe<PostActivitiesConnection>;
+  postActivitiesByAuthor?: Maybe<PostActivitiesByAuthorConnection>;
+  postActivitiesByPost?: Maybe<PostActivitiesByPostConnection>;
+  postActivity?: Maybe<PostActivity>;
+  postBySlug?: Maybe<Post>;
+  posts?: Maybe<PostsConnection>;
+  postsByBoard?: Maybe<PostsByBoardConnection>;
+  postsByRoadmap?: Maybe<PostsByRoadmapConnection>;
+  postsByUser?: Maybe<PostsByUserConnection>;
+  roadmap?: Maybe<Roadmap>;
+  roadmapByUrl?: Maybe<Roadmap>;
+  roadmapCollection?: Maybe<RoadmapCollection>;
+  roadmapCollections?: Maybe<RoadmapCollectionsConnection>;
+  roadmaps?: Maybe<RoadmapsConnection>;
+  roadmapsByCollection?: Maybe<RoadmapsByCollectionConnection>;
+  siteSettings?: Maybe<SiteSettings>;
+  user?: Maybe<User>;
+  userByEmail?: Maybe<User>;
+  userByUsername?: Maybe<User>;
+  users?: Maybe<UsersConnection>;
+  vote?: Maybe<Vote>;
+  votes?: Maybe<VotesConnection>;
+  votesByPost?: Maybe<VotesByPostConnection>;
+  votesByUser?: Maybe<VotesByUserConnection>;
 };
 
 
-export type QueryEmailConfigurationArgs = {
+export type QueryBoardArgs = {
   id: Scalars['UUID']['input'];
 };
 
 
-export type QueryEmailContactsArgs = {
+export type QueryBoardByUrlArgs = {
+  url: Scalars['String']['input'];
+};
+
+
+export type QueryBoardsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  emailConfigurationId: Scalars['UUID']['input'];
+  displayOnly?: InputMaybe<Scalars['Boolean']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<EmailContactFilterInput>;
+  order?: InputMaybe<Array<BoardSortInput>>;
+  where?: InputMaybe<BoardFilterInput>;
 };
 
 
-export type QueryProjectArgs = {
+export type QueryCommentArgs = {
   id: Scalars['UUID']['input'];
 };
 
 
-export type QueryProjectsArgs = {
-  where?: InputMaybe<ProjectFilterInput>;
+export type QueryCommentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<CommentSortInput>>;
+  where?: InputMaybe<CommentFilterInput>;
+};
+
+
+export type QueryCommentsByParentArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<CommentSortInput>>;
+  parentId: Scalars['UUID']['input'];
+  where?: InputMaybe<CommentFilterInput>;
+};
+
+
+export type QueryPostArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type QueryPostActivitiesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<PostActivitySortInput>>;
+  where?: InputMaybe<PostActivityFilterInput>;
+};
+
+
+export type QueryPostActivitiesByAuthorArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  authorId: Scalars['UUID']['input'];
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<PostActivitySortInput>>;
+  where?: InputMaybe<PostActivityFilterInput>;
+};
+
+
+export type QueryPostActivitiesByPostArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<PostActivitySortInput>>;
+  postId: Scalars['UUID']['input'];
+  where?: InputMaybe<PostActivityFilterInput>;
+};
+
+
+export type QueryPostActivityArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type QueryPostBySlugArgs = {
+  slug: Scalars['String']['input'];
+  slugId: Scalars['String']['input'];
+};
+
+
+export type QueryPostsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<PostSortInput>>;
+  where?: InputMaybe<PostFilterInput>;
+};
+
+
+export type QueryPostsByBoardArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  boardId: Scalars['UUID']['input'];
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<PostSortInput>>;
+  where?: InputMaybe<PostFilterInput>;
+};
+
+
+export type QueryPostsByRoadmapArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<PostSortInput>>;
+  roadmapId: Scalars['UUID']['input'];
+  where?: InputMaybe<PostFilterInput>;
+};
+
+
+export type QueryPostsByUserArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<PostSortInput>>;
+  userId: Scalars['UUID']['input'];
+  where?: InputMaybe<PostFilterInput>;
+};
+
+
+export type QueryRoadmapArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type QueryRoadmapByUrlArgs = {
+  url: Scalars['String']['input'];
+};
+
+
+export type QueryRoadmapCollectionArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type QueryRoadmapCollectionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  displayOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<RoadmapCollectionSortInput>>;
+  where?: InputMaybe<RoadmapCollectionFilterInput>;
+};
+
+
+export type QueryRoadmapsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  displayOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<RoadmapSortInput>>;
+  where?: InputMaybe<RoadmapFilterInput>;
+};
+
+
+export type QueryRoadmapsByCollectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  collectionId: Scalars['UUID']['input'];
+  displayOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<RoadmapSortInput>>;
+  where?: InputMaybe<RoadmapFilterInput>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type QueryUserByEmailArgs = {
+  email: Scalars['String']['input'];
+};
+
+
+export type QueryUserByUsernameArgs = {
+  username: Scalars['String']['input'];
+};
+
+
+export type QueryUsersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<UserSortInput>>;
+  where?: InputMaybe<UserFilterInput>;
+};
+
+
+export type QueryVoteArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type QueryVotesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<VoteSortInput>>;
+  where?: InputMaybe<VoteFilterInput>;
+};
+
+
+export type QueryVotesByPostArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<VoteSortInput>>;
+  postId: Scalars['UUID']['input'];
+  where?: InputMaybe<VoteFilterInput>;
+};
+
+
+export type QueryVotesByUserArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<VoteSortInput>>;
+  userId: Scalars['UUID']['input'];
+  where?: InputMaybe<VoteFilterInput>;
+};
+
+export type Roadmap = {
+  __typename?: 'Roadmap';
+  color: Scalars['String']['output'];
+  display: Scalars['Boolean']['output'];
+  id: Scalars['UUID']['output'];
+  index: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  posts: Array<Post>;
+  roadmapCollection?: Maybe<RoadmapCollection>;
+  roadmapCollectionId?: Maybe<Scalars['UUID']['output']>;
+  tenant: Tenant;
+  url: Scalars['String']['output'];
+};
+
+export type RoadmapCollection = {
+  __typename?: 'RoadmapCollection';
+  description?: Maybe<Scalars['String']['output']>;
+  display: Scalars['Boolean']['output'];
+  id: Scalars['UUID']['output'];
+  index: Scalars['Int']['output'];
+  isPublic: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  roadmaps: Array<Roadmap>;
+  tenant: Tenant;
+};
+
+export type RoadmapCollectionFilterInput = {
+  and?: InputMaybe<Array<RoadmapCollectionFilterInput>>;
+  description?: InputMaybe<StringOperationFilterInput>;
+  display?: InputMaybe<BooleanOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  index?: InputMaybe<IntOperationFilterInput>;
+  isPublic?: InputMaybe<BooleanOperationFilterInput>;
+  name?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<RoadmapCollectionFilterInput>>;
+  roadmaps?: InputMaybe<ListFilterInputTypeOfRoadmapFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
+};
+
+export type RoadmapCollectionSortInput = {
+  description?: InputMaybe<SortEnumType>;
+  display?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  index?: InputMaybe<SortEnumType>;
+  isPublic?: InputMaybe<SortEnumType>;
+  name?: InputMaybe<SortEnumType>;
+  tenant?: InputMaybe<TenantSortInput>;
+};
+
+/** A connection to a list of items. */
+export type RoadmapCollectionsConnection = {
+  __typename?: 'RoadmapCollectionsConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<RoadmapCollectionsEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<RoadmapCollection>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type RoadmapCollectionsEdge = {
+  __typename?: 'RoadmapCollectionsEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: RoadmapCollection;
+};
+
+export type RoadmapFilterInput = {
+  and?: InputMaybe<Array<RoadmapFilterInput>>;
+  color?: InputMaybe<StringOperationFilterInput>;
+  display?: InputMaybe<BooleanOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  index?: InputMaybe<IntOperationFilterInput>;
+  name?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<RoadmapFilterInput>>;
+  posts?: InputMaybe<ListFilterInputTypeOfPostFilterInput>;
+  roadmapCollection?: InputMaybe<RoadmapCollectionFilterInput>;
+  roadmapCollectionId?: InputMaybe<UuidOperationFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
+  url?: InputMaybe<StringOperationFilterInput>;
+};
+
+export type RoadmapSortInput = {
+  color?: InputMaybe<SortEnumType>;
+  display?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  index?: InputMaybe<SortEnumType>;
+  name?: InputMaybe<SortEnumType>;
+  roadmapCollection?: InputMaybe<RoadmapCollectionSortInput>;
+  roadmapCollectionId?: InputMaybe<SortEnumType>;
+  tenant?: InputMaybe<TenantSortInput>;
+  url?: InputMaybe<SortEnumType>;
+};
+
+/** A connection to a list of items. */
+export type RoadmapsByCollectionConnection = {
+  __typename?: 'RoadmapsByCollectionConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<RoadmapsByCollectionEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Roadmap>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type RoadmapsByCollectionEdge = {
+  __typename?: 'RoadmapsByCollectionEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Roadmap;
+};
+
+/** A connection to a list of items. */
+export type RoadmapsConnection = {
+  __typename?: 'RoadmapsConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<RoadmapsEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Roadmap>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type RoadmapsEdge = {
+  __typename?: 'RoadmapsEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Roadmap;
+};
+
+export type SiteSettings = {
+  __typename?: 'SiteSettings';
+  accentColor?: Maybe<Scalars['String']['output']>;
+  allowSignup: Scalars['Boolean']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  developerMode: Scalars['Boolean']['output'];
+  googleAnalyticsId?: Maybe<Scalars['String']['output']>;
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['UUID']['output'];
+  isPoweredBy: Scalars['Boolean']['output'];
+  labs: Scalars['String']['output'];
+  logo?: Maybe<Scalars['String']['output']>;
+  tenant: Tenant;
+  theme: Scalars['String']['output'];
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type SiteSettingsFilterInput = {
+  accentColor?: InputMaybe<StringOperationFilterInput>;
+  allowSignup?: InputMaybe<BooleanOperationFilterInput>;
+  and?: InputMaybe<Array<SiteSettingsFilterInput>>;
+  description?: InputMaybe<StringOperationFilterInput>;
+  developerMode?: InputMaybe<BooleanOperationFilterInput>;
+  googleAnalyticsId?: InputMaybe<StringOperationFilterInput>;
+  icon?: InputMaybe<StringOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  isPoweredBy?: InputMaybe<BooleanOperationFilterInput>;
+  labs?: InputMaybe<StringOperationFilterInput>;
+  logo?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<SiteSettingsFilterInput>>;
+  tenant?: InputMaybe<TenantFilterInput>;
+  theme?: InputMaybe<StringOperationFilterInput>;
+  title?: InputMaybe<StringOperationFilterInput>;
 };
 
 export enum SortEnumType {
@@ -490,14 +1042,173 @@ export type StringOperationFilterInput = {
   startsWith?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateProjectInput = {
-  id: Scalars['UUID']['input'];
-  name: Scalars['String']['input'];
+export type Tenant = {
+  __typename?: 'Tenant';
+  boards: Array<Board>;
+  domain: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
+  siteSettings: Array<SiteSettings>;
 };
 
-export type UpdateProjectPayload = {
-  __typename?: 'UpdateProjectPayload';
-  project?: Maybe<Array<Project>>;
+export type TenantFilterInput = {
+  and?: InputMaybe<Array<TenantFilterInput>>;
+  boards?: InputMaybe<ListFilterInputTypeOfBoardFilterInput>;
+  domain?: InputMaybe<StringOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  or?: InputMaybe<Array<TenantFilterInput>>;
+  siteSettings?: InputMaybe<ListFilterInputTypeOfSiteSettingsFilterInput>;
+};
+
+export type TenantSortInput = {
+  domain?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+};
+
+export type UpdateBoardInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
+  display?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['UUID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+  viewVoters?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateCommentInput = {
+  body?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['UUID']['input'];
+  isInternal?: InputMaybe<Scalars['Boolean']['input']>;
+  isSpam?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdatePostInput = {
+  boardId?: InputMaybe<Scalars['UUID']['input']>;
+  contentMarkdown?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['UUID']['input'];
+  roadmapId?: InputMaybe<Scalars['UUID']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateRoadmapCollectionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  display?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['UUID']['input'];
+  index?: InputMaybe<Scalars['Int']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateRoadmapInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
+  display?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['UUID']['input'];
+  index?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  roadmapCollectionId?: InputMaybe<Scalars['UUID']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSiteSettingsInput = {
+  accentColor?: InputMaybe<Scalars['String']['input']>;
+  allowSignup?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  developerMode?: InputMaybe<Scalars['Boolean']['input']>;
+  googleAnalyticsId?: InputMaybe<Scalars['String']['input']>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  isPoweredBy?: InputMaybe<Scalars['Boolean']['input']>;
+  labs?: InputMaybe<Scalars['String']['input']>;
+  logo?: InputMaybe<Scalars['String']['input']>;
+  theme?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateTenantInput = {
+  domain?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['UUID']['input'];
+};
+
+export type UpdateUserInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['UUID']['input'];
+  isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
+  isOwner?: InputMaybe<Scalars['Boolean']['input']>;
+  isVerified?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type User = {
+  __typename?: 'User';
+  avatar?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
+  isBlocked: Scalars['Boolean']['output'];
+  isOwner: Scalars['Boolean']['output'];
+  isVerified: Scalars['Boolean']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  notes?: Maybe<Scalars['String']['output']>;
+  password: Scalars['String']['output'];
+  posts: Array<Post>;
+  tenant: Tenant;
+  username: Scalars['String']['output'];
+  votes: Array<Vote>;
+};
+
+export type UserFilterInput = {
+  and?: InputMaybe<Array<UserFilterInput>>;
+  avatar?: InputMaybe<StringOperationFilterInput>;
+  email?: InputMaybe<StringOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  isBlocked?: InputMaybe<BooleanOperationFilterInput>;
+  isOwner?: InputMaybe<BooleanOperationFilterInput>;
+  isVerified?: InputMaybe<BooleanOperationFilterInput>;
+  name?: InputMaybe<StringOperationFilterInput>;
+  notes?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<UserFilterInput>>;
+  password?: InputMaybe<StringOperationFilterInput>;
+  posts?: InputMaybe<ListFilterInputTypeOfPostFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
+  username?: InputMaybe<StringOperationFilterInput>;
+  votes?: InputMaybe<ListFilterInputTypeOfVoteFilterInput>;
+};
+
+export type UserSortInput = {
+  avatar?: InputMaybe<SortEnumType>;
+  email?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  isBlocked?: InputMaybe<SortEnumType>;
+  isOwner?: InputMaybe<SortEnumType>;
+  isVerified?: InputMaybe<SortEnumType>;
+  name?: InputMaybe<SortEnumType>;
+  notes?: InputMaybe<SortEnumType>;
+  password?: InputMaybe<SortEnumType>;
+  tenant?: InputMaybe<TenantSortInput>;
+  username?: InputMaybe<SortEnumType>;
+};
+
+/** A connection to a list of items. */
+export type UsersConnection = {
+  __typename?: 'UsersConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<UsersEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<User>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type UsersEdge = {
+  __typename?: 'UsersEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: User;
 };
 
 export type UuidOperationFilterInput = {
@@ -515,10 +1226,100 @@ export type UuidOperationFilterInput = {
   nlte?: InputMaybe<Scalars['UUID']['input']>;
 };
 
-export type AllProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+export type Vote = {
+  __typename?: 'Vote';
+  id: Scalars['UUID']['output'];
+  postId: Scalars['UUID']['output'];
+  tenant: Tenant;
+  userId: Scalars['UUID']['output'];
+};
+
+export type VoteFilterInput = {
+  and?: InputMaybe<Array<VoteFilterInput>>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  or?: InputMaybe<Array<VoteFilterInput>>;
+  postId?: InputMaybe<UuidOperationFilterInput>;
+  tenant?: InputMaybe<TenantFilterInput>;
+  userId?: InputMaybe<UuidOperationFilterInput>;
+};
+
+export type VoteSortInput = {
+  id?: InputMaybe<SortEnumType>;
+  postId?: InputMaybe<SortEnumType>;
+  tenant?: InputMaybe<TenantSortInput>;
+  userId?: InputMaybe<SortEnumType>;
+};
+
+/** A connection to a list of items. */
+export type VotesByPostConnection = {
+  __typename?: 'VotesByPostConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<VotesByPostEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Vote>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type VotesByPostEdge = {
+  __typename?: 'VotesByPostEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Vote;
+};
+
+/** A connection to a list of items. */
+export type VotesByUserConnection = {
+  __typename?: 'VotesByUserConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<VotesByUserEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Vote>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type VotesByUserEdge = {
+  __typename?: 'VotesByUserEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Vote;
+};
+
+/** A connection to a list of items. */
+export type VotesConnection = {
+  __typename?: 'VotesConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<VotesEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Vote>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type VotesEdge = {
+  __typename?: 'VotesEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Vote;
+};
+
+export type GetSiteSettingsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: any, name: string }> };
+export type GetSiteSettingsQuery = { __typename?: 'Query', siteSettings?: { __typename?: 'SiteSettings', id: any, title?: string | null, description?: string | null, logo?: string | null, icon?: string | null, accentColor?: string | null, googleAnalyticsId?: string | null, isPoweredBy: boolean, allowSignup: boolean, developerMode: boolean, labs: string, theme: string } | null };
 
 
-export const AllProjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allProjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<AllProjectsQuery, AllProjectsQueryVariables>;
+export const GetSiteSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getSiteSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"accentColor"}},{"kind":"Field","name":{"kind":"Name","value":"googleAnalyticsId"}},{"kind":"Field","name":{"kind":"Name","value":"isPoweredBy"}},{"kind":"Field","name":{"kind":"Name","value":"allowSignup"}},{"kind":"Field","name":{"kind":"Name","value":"developerMode"}},{"kind":"Field","name":{"kind":"Name","value":"labs"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}}]}}]}}]} as unknown as DocumentNode<GetSiteSettingsQuery, GetSiteSettingsQueryVariables>;
