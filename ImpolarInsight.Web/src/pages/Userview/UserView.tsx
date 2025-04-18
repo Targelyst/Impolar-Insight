@@ -8,19 +8,21 @@ interface UserViewProps {
 }
 
 export const UserView = ({ children }: UserViewProps) => {
+  // Get theme colors from ThemeContext
+  
   // Grab your two public routes directly
   const fb = RoutesAndUrls.PUBLIC_FEEDBACK
   const rm = RoutesAndUrls.PUBLIC_ROADMAP
 
   return (
-    <div className="min-h-screen w-screen bg-gray-50">
+    <div className="min-h-screen w-screen bg-main">
       {/* HEADER */}
-      <header className="bg-white">
+      <header className="bg-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo / Site Name */}
             <Link to="/" className="flex items-center">
-              <span className="ml-2 text-xl font-bold text-gray-800">
+              <span className="ml-2 text-xl font-bold">
                 Impo
               </span>
             </Link>
@@ -30,19 +32,19 @@ export const UserView = ({ children }: UserViewProps) => {
               {/* notifications */}
               <button
                 type="button"
-                className="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none"
+                className="rounded-full p-1 focus:outline-none"
               >
                 🔔
               </button>
               {/* dashboard link */}
               <Link
                 to={RoutesAndUrls.HOME.urlPath}
-                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="inline-flex items-center rounded-md border border-secondary bg-surface px-3 py-1.5 text-sm font-medium hover:bg-highlight"
               >
                 {RoutesAndUrls.HOME.pageName}
               </Link>
               {/* user avatar */}
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium">
                 A
               </div>
             </div>
@@ -51,9 +53,9 @@ export const UserView = ({ children }: UserViewProps) => {
       </header>
 
       {/* NAVIGATION UNDER HEADER */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex justify-center py-3">
+      <div className="bg-surface shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex justify-start">
             {/* Feedback */}
             <NavLink
               to={fb.urlPath}
@@ -61,9 +63,9 @@ export const UserView = ({ children }: UserViewProps) => {
               className={({ isActive }) =>
                 [
                   isActive
-                    ? "text-gray-900 border-b-2 border-indigo-500"
-                    : "text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300",
-                  "inline-flex items-center px-3 py-2 text-sm font-medium mr-6",
+                    ? "bg-main rounded-t-xl pt-3 px-4 pb-2"
+                    : "hover:bg-highlight px-3 py-2",
+                  "inline-flex items-center text-sm font-medium mr-6",
                 ].join(" ")
               }
             >
@@ -78,9 +80,9 @@ export const UserView = ({ children }: UserViewProps) => {
               className={({ isActive }) =>
                 [
                   isActive
-                    ? "text-gray-900 border-b-2 border-indigo-500"
-                    : "text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300",
-                  "inline-flex items-center px-3 py-2 text-sm font-medium",
+                    ? "bg-main rounded-t-xl pt-3 px-4 pb-2"
+                    : "hover:bg-highlight px-3 py-2",
+                  "inline-flex items-center text-sm font-medium",
                 ].join(" ")
               }
             >

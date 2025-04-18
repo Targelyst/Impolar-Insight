@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useQuery } from 'urql';
 import { graphql } from '../gql';
 import { parseThemeFromLabs, createThemeWithAccentColor, applyThemeToDOM } from '../utils/themeUtils';
-import { useGetSiteSettingsQuery } from '../api/projects';
+import { useGetSiteSettingsQuery } from '../api/settings';
 
 // Define theme structure based on your SiteSettings theme JSON
 export interface ThemeColors {
@@ -25,16 +25,16 @@ interface ThemeContextType {
 }
 
 export const defaultThemeColors: ThemeColors = {
-    primary: '#000000',
+    primary: '#5300E8',  // Changed to match the default in CSS
     'primary-text': '#FEFEFE',
     secondary: '#D5CDFF',
     'secondary-text': '#6B12FF',
-    bg: '#0E0E11',
-    'bg-text': '#FAFAFA',
-    'bg-surface': '#18181B',
-    'bg-surface-text': '#FAFAFA',
-    'bg-highlight': '#28252D',
-    'bg-highlight-text': '#FAFAFA',
+    bg: '#FFFFFF',  // Light mode default
+    'bg-text': '#333333',
+    'bg-surface': '#F5F5F5',
+    'bg-surface-text': '#333333',
+    'bg-highlight': '#EAEAEA',
+    'bg-highlight-text': '#333333',
 };
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -66,26 +66,50 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             console.log('Site settings:', settings);
 
             try {
-                // Try to parse theme from the labs field
+                // Priority 1: Try to parse the theme field directly from settings
                 let themeColors: ThemeColors | null = null;
-
-                if (settings.labs) {
-                    themeColors = parseThemeFromLabs(settings.labs);
+                
+                if (settings.theme) {
+                    console.log('Theme data found:', settings.theme);
+                    try {
+                        const parsedTheme = JSON.parse(settings.theme);
+                        console.log('Parsed theme data:', parsedTheme);
+                        
+                        // Check if the parsed theme has the necessary properties
+                        if (parsedTheme && typeof parsedTheme === 'object') {
+                            // Merge with default theme to ensure all properties exist
+                            themeColors = { ...defaultThemeColors, ...parsedTheme };
+                            console.log('Valid theme found in theme field:', themeColors);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing theme JSON:', error);
+                    }
                 }
 
-                // If no theme found in labs, but we have accentColor, create a theme with it
+                // Priority 2: If no theme from theme field, try to parse from labs
+                if (!themeColors && settings.labs) {
+                    console.log('Labs data:', settings.labs);
+                    themeColors = parseThemeFromLabs(settings.labs);
+                    console.log('Theme parsed from labs:', themeColors);
+                }
+
+                // Priority 3: If no theme found in theme field or labs, but we have accentColor, create a theme with it
                 if (!themeColors && settings.accentColor) {
+                    console.log('Creating theme from accent color:', settings.accentColor);
                     themeColors = createThemeWithAccentColor(
                         settings.accentColor,
                         defaultThemeColors
                     );
+                    console.log('Theme created from accent color:', themeColors);
                 }
 
                 // Use the parsed theme or fallback to default
                 if (themeColors) {
+                    console.log('Setting theme colors:', themeColors);
                     setThemeColors(themeColors);
                 } else {
                     // Apply default theme if parsing fails
+                    console.log('Falling back to default theme');
                     setThemeColors(defaultThemeColors);
                 }
             } catch (error) {
