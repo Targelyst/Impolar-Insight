@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HotChocolate.Authorization;
 
 namespace ImpolarInsight.Models;
 
@@ -19,7 +20,7 @@ public class Board : KeyedEntity
 
 /// <summary>
 /// Post represents user feedback, feature requests, or ideas
-/// </summary>
+/// </summary
 public class Post : KeyedEntity
 {
     public required string Title { get; set; }
