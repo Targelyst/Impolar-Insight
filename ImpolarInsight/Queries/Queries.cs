@@ -5,25 +5,6 @@ using HotChocolate.Authorization;
 
 namespace ImpolarInsight.Queries;
 
-// [QueryType]
-// public static class ProjectQueries {
-//
-//     [UseFirstOrDefault]
-//     [UseProjection]
-//     public static IQueryable<Project> GetProject(
-//         Guid id,
-//         ImpolarInsightContext db
-//     ) => db.Projects.Where(p => p.Id == id);
-//
-//     [UsePaging]
-//     [UseProjection]
-//     [UseFiltering]
-//     [UseSorting]
-//     public static IQueryable<Project> GetProjects(
-//         ImpolarInsightContext db
-//     ) => db.Projects.OrderBy(p => p.Name);
-// }
-
 [QueryType]
 public static class BoardQueries {
     [UseFirstOrDefault]
@@ -46,9 +27,32 @@ public static class BoardQueries {
     [UseSorting]
     public static IQueryable<Board> GetBoards(
         ImpolarInsightContext db,
-        bool? displayOnly = null
+        bool? displayOnly = null,
+        bool rootOnly = false
     ) {
         var query = db.Boards.AsQueryable();
+
+        if (displayOnly == true) {
+            query = query.Where(b => b.Display == true);
+        }
+        
+        if (rootOnly) {
+            query = query.Where(b => b.ParentBoardId == null);
+        }
+
+        return query.OrderBy(b => b.Name);
+    }
+    
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<Board> GetSubBoards(
+        Guid parentId,
+        ImpolarInsightContext db,
+        bool? displayOnly = null
+    ) {
+        var query = db.Boards.Where(b => b.ParentBoardId == parentId);
 
         if (displayOnly == true) {
             query = query.Where(b => b.Display == true);
@@ -172,16 +176,9 @@ public static class RoadmapCollectionQueries {
     [UseFiltering]
     [UseSorting]
     public static IQueryable<RoadmapCollection> GetRoadmapCollections(
-        ImpolarInsightContext db,
-        bool? displayOnly = null
+        ImpolarInsightContext db
     ) {
-        var query = db.RoadmapCollections.AsQueryable();
-
-        if (displayOnly == true) {
-            query = query.Where(rc => rc.Display == true);
-        }
-
-        return query.OrderBy(rc => rc.Index);
+        return db.RoadmapCollections.OrderBy(rc => rc.Index);
     }
 
     [UsePaging]
@@ -202,8 +199,6 @@ public static class RoadmapCollectionQueries {
         return query.OrderBy(r => r.Index);
     }
 }
-
-
 
 [QueryType]
 public static class RoadmapQueries {
@@ -349,3 +344,88 @@ public static class SiteSettingsQueries {
     ) => db.SiteSettings;
 }
 
+[QueryType]
+public static class PostRoadmapHistoryQueries {
+    [UseFirstOrDefault]
+    [UseProjection]
+    public static IQueryable<PostRoadmapHistory> GetPostRoadmapHistoryEntry(
+        Guid id,
+        ImpolarInsightContext db
+    ) => db.PostRoadmapHistory.Where(prh => prh.Id == id);
+
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<PostRoadmapHistory> GetPostRoadmapHistory(
+        ImpolarInsightContext db
+    ) => db.PostRoadmapHistory.OrderByDescending(prh => prh.MovedAt);
+
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<PostRoadmapHistory> GetPostRoadmapHistoryByPost(
+        Guid postId,
+        ImpolarInsightContext db
+    ) => db.PostRoadmapHistory
+        .Where(prh => prh.PostId == postId)
+        .OrderByDescending(prh => prh.MovedAt);
+
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<PostRoadmapHistory> GetPostRoadmapHistoryByRoadmap(
+        Guid roadmapId,
+        ImpolarInsightContext db
+    ) => db.PostRoadmapHistory
+        .Where(prh => prh.FromRoadmapId == roadmapId || prh.ToRoadmapId == roadmapId)
+        .OrderByDescending(prh => prh.MovedAt);
+}
+
+[QueryType]
+public static class ChangelogQueries {
+    [UseFirstOrDefault]
+    [UseProjection]
+    public static IQueryable<ChangelogItem> GetChangelogItem(
+        Guid id,
+        ImpolarInsightContext db
+    ) => db.ChangelogItems.Where(c => c.Id == id);
+
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<ChangelogItem> GetChangelogItems(
+        ImpolarInsightContext db,
+        bool publishedOnly = false
+    ) {
+        var query = db.ChangelogItems.AsQueryable();
+        
+        if (publishedOnly) {
+            query = query.Where(c => c.IsPublished);
+        }
+        
+        return query.OrderByDescending(c => c.PublishedAt ?? c.CreatedAt);
+    }
+
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<ChangelogItem> GetChangelogItemsByPost(
+        Guid postId,
+        ImpolarInsightContext db,
+        bool publishedOnly = false
+    ) {
+        var query = db.ChangelogItems
+            .Where(c => c.RelatedPosts.Any(p => p.Id == postId));
+        
+        if (publishedOnly) {
+            query = query.Where(c => c.IsPublished);
+        }
+        
+        return query.OrderByDescending(c => c.PublishedAt ?? c.CreatedAt);
+    }
+}

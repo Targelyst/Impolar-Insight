@@ -33,13 +33,43 @@ namespace ImpolarInsight.Migrations
                     Color = table.Column<string>(type: "text", nullable: false),
                     Display = table.Column<bool>(type: "boolean", nullable: false),
                     ViewVoters = table.Column<bool>(type: "boolean", nullable: false),
+                    ParentBoardId = table.Column<Guid>(type: "uuid", nullable: true),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Boards", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Boards_Boards_ParentBoardId",
+                        column: x => x.ParentBoardId,
+                        principalTable: "Boards",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Boards_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChangelogItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    ContentMarkdown = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PublishedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsPublished = table.Column<bool>(type: "boolean", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChangelogItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChangelogItems_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
@@ -53,7 +83,6 @@ namespace ImpolarInsight.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Display = table.Column<bool>(type: "boolean", nullable: false),
                     Index = table.Column<int>(type: "integer", nullable: false),
                     isPublic = table.Column<bool>(type: "boolean", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false)
@@ -112,6 +141,7 @@ namespace ImpolarInsight.Migrations
                     IsOwner = table.Column<bool>(type: "boolean", nullable: false),
                     IsBlocked = table.Column<bool>(type: "boolean", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -133,6 +163,7 @@ namespace ImpolarInsight.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Url = table.Column<string>(type: "text", nullable: false),
                     Color = table.Column<string>(type: "text", nullable: false),
+                    Icon = table.Column<string>(type: "text", nullable: true),
                     Index = table.Column<int>(type: "integer", nullable: false),
                     Display = table.Column<bool>(type: "boolean", nullable: false),
                     RoadmapCollectionId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -164,6 +195,8 @@ namespace ImpolarInsight.Migrations
                     Slug = table.Column<string>(type: "text", nullable: false),
                     SlugId = table.Column<string>(type: "text", nullable: false),
                     ContentMarkdown = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     BoardId = table.Column<Guid>(type: "uuid", nullable: true),
                     RoadmapId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -199,11 +232,36 @@ namespace ImpolarInsight.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChangelogItemPost",
+                columns: table => new
+                {
+                    RelatedChangelogsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RelatedPostsId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChangelogItemPost", x => new { x.RelatedChangelogsId, x.RelatedPostsId });
+                    table.ForeignKey(
+                        name: "FK_ChangelogItemPost_ChangelogItems_RelatedChangelogsId",
+                        column: x => x.RelatedChangelogsId,
+                        principalTable: "ChangelogItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChangelogItemPost_Posts_RelatedPostsId",
+                        column: x => x.RelatedPostsId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PostActivities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CommentId = table.Column<Guid>(type: "uuid", nullable: true),
                     PostId = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -233,12 +291,60 @@ namespace ImpolarInsight.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PostRoadmapHistory",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PostId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FromRoadmapId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ToRoadmapId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MovedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    MovedByUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostRoadmapHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PostRoadmapHistory_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostRoadmapHistory_Roadmaps_FromRoadmapId",
+                        column: x => x.FromRoadmapId,
+                        principalTable: "Roadmaps",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_PostRoadmapHistory_Roadmaps_ToRoadmapId",
+                        column: x => x.ToRoadmapId,
+                        principalTable: "Roadmaps",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_PostRoadmapHistory_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostRoadmapHistory_Users_MovedByUserId",
+                        column: x => x.MovedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Votes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     PostId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -274,6 +380,8 @@ namespace ImpolarInsight.Migrations
                     IsEdited = table.Column<bool>(type: "boolean", nullable: false),
                     IsSpam = table.Column<bool>(type: "boolean", nullable: false),
                     IsInternal = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ActivityId = table.Column<Guid>(type: "uuid", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -301,8 +409,23 @@ namespace ImpolarInsight.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Boards_ParentBoardId",
+                table: "Boards",
+                column: "ParentBoardId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Boards_TenantId",
                 table: "Boards",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChangelogItemPost_RelatedPostsId",
+                table: "ChangelogItemPost",
+                column: "RelatedPostsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChangelogItems_TenantId",
+                table: "ChangelogItems",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
@@ -335,6 +458,31 @@ namespace ImpolarInsight.Migrations
                 name: "IX_PostActivities_TenantId",
                 table: "PostActivities",
                 column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostRoadmapHistory_FromRoadmapId",
+                table: "PostRoadmapHistory",
+                column: "FromRoadmapId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostRoadmapHistory_MovedByUserId",
+                table: "PostRoadmapHistory",
+                column: "MovedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostRoadmapHistory_PostId",
+                table: "PostRoadmapHistory",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostRoadmapHistory_TenantId",
+                table: "PostRoadmapHistory",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostRoadmapHistory_ToRoadmapId",
+                table: "PostRoadmapHistory",
+                column: "ToRoadmapId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_BoardId",
@@ -407,13 +555,22 @@ namespace ImpolarInsight.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ChangelogItemPost");
+
+            migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "PostRoadmapHistory");
 
             migrationBuilder.DropTable(
                 name: "SiteSettings");
 
             migrationBuilder.DropTable(
                 name: "Votes");
+
+            migrationBuilder.DropTable(
+                name: "ChangelogItems");
 
             migrationBuilder.DropTable(
                 name: "PostActivities");

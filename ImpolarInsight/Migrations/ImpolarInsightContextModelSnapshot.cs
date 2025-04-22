@@ -22,6 +22,21 @@ namespace ImpolarInsight.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ChangelogItemPost", b =>
+                {
+                    b.Property<Guid>("RelatedChangelogsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RelatedPostsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("RelatedChangelogsId", "RelatedPostsId");
+
+                    b.HasIndex("RelatedPostsId");
+
+                    b.ToTable("ChangelogItemPost", (string)null);
+                });
+
             modelBuilder.Entity("ImpolarInsight.Models.Board", b =>
                 {
                     b.Property<Guid>("Id")
@@ -39,6 +54,9 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("ParentBoardId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -51,9 +69,43 @@ namespace ImpolarInsight.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ParentBoardId");
+
                     b.HasIndex("TenantId");
 
                     b.ToTable("Boards");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.ChangelogItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentMarkdown")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ChangelogItems");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.Comment", b =>
@@ -69,6 +121,9 @@ namespace ImpolarInsight.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsEdited")
                         .HasColumnType("boolean");
 
@@ -83,6 +138,9 @@ namespace ImpolarInsight.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -108,6 +166,9 @@ namespace ImpolarInsight.Migrations
                     b.Property<string>("ContentMarkdown")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid?>("RoadmapId")
                         .HasColumnType("uuid");
 
@@ -125,6 +186,9 @@ namespace ImpolarInsight.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -154,6 +218,9 @@ namespace ImpolarInsight.Migrations
                     b.Property<Guid?>("CommentId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("PostId")
                         .HasColumnType("uuid");
 
@@ -175,6 +242,45 @@ namespace ImpolarInsight.Migrations
                     b.ToTable("PostActivities");
                 });
 
+            modelBuilder.Entity("ImpolarInsight.Models.PostRoadmapHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FromRoadmapId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("MovedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("MovedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ToRoadmapId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromRoadmapId");
+
+                    b.HasIndex("MovedByUserId");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("ToRoadmapId");
+
+                    b.ToTable("PostRoadmapHistory");
+                });
+
             modelBuilder.Entity("ImpolarInsight.Models.Roadmap", b =>
                 {
                     b.Property<Guid>("Id")
@@ -187,6 +293,9 @@ namespace ImpolarInsight.Migrations
 
                     b.Property<bool>("Display")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text");
 
                     b.Property<int>("Index")
                         .HasColumnType("integer");
@@ -222,9 +331,6 @@ namespace ImpolarInsight.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<bool>("Display")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("Index")
                         .HasColumnType("integer");
@@ -324,6 +430,9 @@ namespace ImpolarInsight.Migrations
                     b.Property<string>("Avatar")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -367,6 +476,9 @@ namespace ImpolarInsight.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("PostId")
                         .HasColumnType("uuid");
 
@@ -387,10 +499,43 @@ namespace ImpolarInsight.Migrations
                     b.ToTable("Votes");
                 });
 
+            modelBuilder.Entity("ChangelogItemPost", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.ChangelogItem", null)
+                        .WithMany()
+                        .HasForeignKey("RelatedChangelogsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ImpolarInsight.Models.Post", null)
+                        .WithMany()
+                        .HasForeignKey("RelatedPostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ImpolarInsight.Models.Board", b =>
                 {
+                    b.HasOne("ImpolarInsight.Models.Board", "ParentBoard")
+                        .WithMany("SubBoards")
+                        .HasForeignKey("ParentBoardId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
                         .WithMany("Boards")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentBoard");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("ImpolarInsight.Models.ChangelogItem", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -484,6 +629,46 @@ namespace ImpolarInsight.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("ImpolarInsight.Models.PostRoadmapHistory", b =>
+                {
+                    b.HasOne("ImpolarInsight.Models.Roadmap", "FromRoadmap")
+                        .WithMany()
+                        .HasForeignKey("FromRoadmapId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ImpolarInsight.Models.User", "MovedByUser")
+                        .WithMany()
+                        .HasForeignKey("MovedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ImpolarInsight.Models.Post", "Post")
+                        .WithMany("RoadmapHistory")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ImpolarInsight.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ImpolarInsight.Models.Roadmap", "ToRoadmap")
+                        .WithMany("PostHistory")
+                        .HasForeignKey("ToRoadmapId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("FromRoadmap");
+
+                    b.Navigation("MovedByUser");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("ToRoadmap");
+                });
+
             modelBuilder.Entity("ImpolarInsight.Models.Roadmap", b =>
                 {
                     b.HasOne("ImpolarInsight.Models.RoadmapCollection", "RoadmapCollection")
@@ -565,11 +750,15 @@ namespace ImpolarInsight.Migrations
             modelBuilder.Entity("ImpolarInsight.Models.Board", b =>
                 {
                     b.Navigation("Posts");
+
+                    b.Navigation("SubBoards");
                 });
 
             modelBuilder.Entity("ImpolarInsight.Models.Post", b =>
                 {
                     b.Navigation("Activities");
+
+                    b.Navigation("RoadmapHistory");
 
                     b.Navigation("Votes");
                 });
@@ -581,6 +770,8 @@ namespace ImpolarInsight.Migrations
 
             modelBuilder.Entity("ImpolarInsight.Models.Roadmap", b =>
                 {
+                    b.Navigation("PostHistory");
+
                     b.Navigation("Posts");
                 });
 

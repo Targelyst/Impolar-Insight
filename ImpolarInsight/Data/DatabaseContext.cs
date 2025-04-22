@@ -27,8 +27,11 @@ public class ImpolarInsightContext : DbContext {
     public DbSet<PostActivity> PostActivities { get; set; }
     public DbSet<SiteSettings> SiteSettings { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
-
     public DbSet<RoadmapCollection> RoadmapCollections { get; set; }
+    
+    // New entities
+    public DbSet<PostRoadmapHistory> PostRoadmapHistory { get; set; }
+    public DbSet<ChangelogItem> ChangelogItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         // Apply tenant filter to all entities derived from Entity
@@ -42,6 +45,10 @@ public class ImpolarInsightContext : DbContext {
         modelBuilder.Entity<SiteSettings>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Tenant>().HasQueryFilter(e => e.Domain == userService.TenantDomain);
         modelBuilder.Entity<RoadmapCollection>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        
+        // New entities tenant filters
+        modelBuilder.Entity<PostRoadmapHistory>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        modelBuilder.Entity<ChangelogItem>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
 
         modelBuilder.Entity<Roadmap>()
             .HasOne(r => r.RoadmapCollection)
@@ -49,6 +56,12 @@ public class ImpolarInsightContext : DbContext {
             .HasForeignKey(r => r.RoadmapCollectionId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // Configure Board parent-child relationship
+        modelBuilder.Entity<Board>()
+            .HasOne(b => b.ParentBoard)
+            .WithMany(b => b.SubBoards)
+            .HasForeignKey(b => b.ParentBoardId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Configure relationships
         modelBuilder.Entity<Post>()
@@ -104,6 +117,37 @@ public class ImpolarInsightContext : DbContext {
             .WithMany()
             .HasForeignKey(pa => pa.AuthorId)
             .OnDelete(DeleteBehavior.Cascade);
+            
+        // Configure PostRoadmapHistory relationships
+        modelBuilder.Entity<PostRoadmapHistory>()
+            .HasOne(prh => prh.Post)
+            .WithMany(p => p.RoadmapHistory)
+            .HasForeignKey(prh => prh.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+        modelBuilder.Entity<PostRoadmapHistory>()
+            .HasOne(prh => prh.FromRoadmap)
+            .WithMany()
+            .HasForeignKey(prh => prh.FromRoadmapId)
+            .OnDelete(DeleteBehavior.SetNull);
+            
+        modelBuilder.Entity<PostRoadmapHistory>()
+            .HasOne(prh => prh.ToRoadmap)
+            .WithMany(r => r.PostHistory)
+            .HasForeignKey(prh => prh.ToRoadmapId)
+            .OnDelete(DeleteBehavior.SetNull);
+            
+        modelBuilder.Entity<PostRoadmapHistory>()
+            .HasOne(prh => prh.MovedByUser)
+            .WithMany()
+            .HasForeignKey(prh => prh.MovedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+            
+        // Configure Changelog relationships
+        modelBuilder.Entity<ChangelogItem>()
+            .HasMany(c => c.RelatedPosts)
+            .WithMany(p => p.RelatedChangelogs)
+            .UsingEntity(j => j.ToTable("ChangelogItemPost"));
     }
 
     public override void Dispose() {

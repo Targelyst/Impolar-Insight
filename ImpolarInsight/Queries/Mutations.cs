@@ -368,7 +368,6 @@ public class RoadmapCollectionMutations
             Id = Guid.NewGuid(),
             Name = input.Name,
             Description = input.Description,
-            Display = input.Display,
             Index = input.Index,
             isPublic = input.IsPublic,
             TenantId = tenant.Id
@@ -393,9 +392,6 @@ public class RoadmapCollectionMutations
         collection.Name = input.Name ?? collection.Name;
         collection.Description = input.Description ?? collection.Description;
         
-        if (input.Display.HasValue)
-            collection.Display = input.Display.Value;
-            
         if (input.Index.HasValue)
             collection.Index = input.Index.Value;
             
