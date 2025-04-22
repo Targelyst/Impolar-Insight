@@ -283,6 +283,10 @@ namespace ImpolarInsight.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("Title")
                         .HasColumnType("text");
 

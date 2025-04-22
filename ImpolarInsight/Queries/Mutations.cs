@@ -7,7 +7,7 @@ using HotChocolate.Authorization;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ImpolarInsight.Mutations;
+namespace ImpolarInsight.Queries;
 
 // Board Mutations
 [ExtendObjectType(OperationTypeNames.Mutation)]
@@ -783,7 +783,8 @@ public class SiteSettingsMutations
             AllowSignup = input.AllowSignup,
             DeveloperMode = input.DeveloperMode,
             Labs = input.Labs ?? "{}",
-            TenantId = tenant.Id
+            TenantId = tenant.Id,
+            Theme = input.Theme ?? "{}"
         };
         
         db.SiteSettings.Add(settings);
@@ -809,6 +810,7 @@ public class SiteSettingsMutations
         settings.AccentColor = input.AccentColor ?? settings.AccentColor;
         settings.GoogleAnalyticsId = input.GoogleAnalyticsId ?? settings.GoogleAnalyticsId;
         settings.Labs = input.Labs ?? settings.Labs;
+        settings.Theme = input.Theme ?? settings.Theme;
         
         if (input.IsPoweredBy.HasValue)
             settings.IsPoweredBy = input.IsPoweredBy.Value;
@@ -835,7 +837,8 @@ public record CreateSiteSettingsInput(
     bool IsPoweredBy = true,
     bool AllowSignup = true,
     bool DeveloperMode = false,
-    string? Labs = null);
+    string? Labs = null,
+    string? Theme = null);
 
 public record UpdateSiteSettingsInput(
     string? Title = null,
@@ -847,7 +850,8 @@ public record UpdateSiteSettingsInput(
     bool? IsPoweredBy = null,
     bool? AllowSignup = null,
     bool? DeveloperMode = null,
-    string? Labs = null);
+    string? Labs = null,
+    string? Theme = null);
 
 // Tenant Mutations
 [ExtendObjectType(OperationTypeNames.Mutation)]

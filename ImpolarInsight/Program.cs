@@ -7,6 +7,22 @@ using ImpolarInsight.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",     // Vite development server
+                "http://localhost:4173"      // Vite preview server
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddOptions<DatabaseConfiguration>()
   .Bind(builder.Configuration.GetSection(DatabaseConfiguration.Section))
   .ValidateDataAnnotations()
@@ -101,6 +117,9 @@ builder.Services
     );
 
 var app = builder.Build();
+
+// Enable CORS
+app.UseCors();
 
 if (app.Environment.IsDevelopment()) {
     app.UseSeeding();

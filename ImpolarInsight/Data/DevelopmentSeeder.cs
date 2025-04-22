@@ -24,6 +24,20 @@ public class DevelopmentSeeder {
             Console.WriteLine("Starting database seeding...");
             Guid devTenant1 = Guid.Parse("00000000-0000-0000-0000-000000000001");
 
+            // Define theme JSON string with the specified colors
+            string themeJson = @"{
+              ""primary"": ""#5300E8"",
+              ""primary-text"": ""#FEFEFE"",
+              ""secondary"": ""#D5CDFF"",
+              ""secondary-text"": ""#6B12FF"",
+              ""bg"": ""#0E0E11"",
+              ""bg-text"": ""#FAFAFA"",
+              ""bg-surface"": ""#18181B"",
+              ""bg-surface-text"": ""#FAFAFA"",
+              ""bg-highlight"": ""#28252D"",
+              ""bg-highlight-text"": ""#FAFAFA""
+            }";
+
             // Check if tenant exists first
             var tenant = db.Tenants.IgnoreQueryFilters().FirstOrDefault(t => t.Id == devTenant1);
             if (tenant == null) {
@@ -72,13 +86,20 @@ public class DevelopmentSeeder {
                     AccentColor = "ff5733",
                     AllowSignup = true,
                     IsPoweredBy = true,
-                    Labs = "{\"comments\": true}"
+                    Labs = "{\"comments\": true}",
+                    Theme = themeJson // Add the theme
                 };
                 db.SiteSettings.Add(exampleSettings);
                 db.SaveChanges();
                 Console.WriteLine("Example site settings created successfully");
             } else {
-                Console.WriteLine("Example site settings already exist");
+                // Update existing example settings with theme if not already set
+                if (exampleSettings.Theme == "{}" || string.IsNullOrEmpty(exampleSettings.Theme)) {
+                    Console.WriteLine("Updating example site settings with theme...");
+                    exampleSettings.Theme = themeJson;
+                    db.SaveChanges();
+                    Console.WriteLine("Example site settings theme updated successfully");
+                }
             }
 
             // Seed admin user for example tenant
@@ -139,48 +160,14 @@ public class DevelopmentSeeder {
                 Console.WriteLine("Example boards already exist");
             }
 
-            // Seed roadmaps for example tenant
-            var exampleRoadmapsExist = db.Roadmaps.IgnoreQueryFilters().Any(r => r.TenantId == devTenant2);
-            Console.WriteLine($"Example roadmaps exist: {exampleRoadmapsExist}");
-            if (!exampleRoadmapsExist) {
-                Console.WriteLine("Creating example roadmaps...");
-                var exampleRoadmaps = new[]
-                {
-                    new Roadmap
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Example Planned",
-                        Url = "example-planned",
-                        Color = GenerateHexColor(),
-                        Index = 0,
-                        Display = true,
-                        TenantId = devTenant2
-                    },
-                    new Roadmap
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Example In Progress",
-                        Url = "example-in-progress",
-                        Color = GenerateHexColor(),
-                        Index = 1,
-                        Display = true,
-                        TenantId = devTenant2
-                    }
-                };
-
-                db.Roadmaps.AddRange(exampleRoadmaps);
-                db.SaveChanges();
-                Console.WriteLine("Example roadmaps created successfully");
-            } else {
-                Console.WriteLine("Example roadmaps already exist");
-            }
-
-            // In DevelopmentSeeder.Seed method, add this after the roadmaps section
-            // Seed roadmap collections
+            // Seed roadmap collections for both tenants first
+            // For tenant 1 (main tenant)
             var roadmapCollectionsExist = db.RoadmapCollections.IgnoreQueryFilters().Any(rc => rc.TenantId == devTenant1);
-            Console.WriteLine($"Roadmap collections exist: {roadmapCollectionsExist}");
+            Console.WriteLine($"Roadmap collections exist for tenant 1: {roadmapCollectionsExist}");
+            Guid mainProductRoadmapCollectionId = Guid.Empty;
+            
             if (!roadmapCollectionsExist) {
-                Console.WriteLine("Creating roadmap collections...");
+                Console.WriteLine("Creating roadmap collections for tenant 1...");
                 var collections = new[]
                 {
                     new RoadmapCollection
@@ -205,15 +192,100 @@ public class DevelopmentSeeder {
 
                 db.RoadmapCollections.AddRange(collections);
                 db.SaveChanges();
-                Console.WriteLine("Roadmap collections created successfully");
-                
-                // Assign existing roadmaps to the first collection
-                var roadmaps = db.Roadmaps.IgnoreQueryFilters().Where(r => r.TenantId == devTenant1).ToList();
-                foreach (var roadmap in roadmaps) {
-                    roadmap.RoadmapCollectionId = collections[0].Id;
+                mainProductRoadmapCollectionId = collections[0].Id;
+                Console.WriteLine("Roadmap collections created successfully for tenant 1");
+            } else {
+                // Get the first collection ID for later use
+                var firstCollection = db.RoadmapCollections.IgnoreQueryFilters()
+                    .FirstOrDefault(rc => rc.TenantId == devTenant1 && rc.Name == "Product Roadmap");
+                if (firstCollection != null) {
+                    mainProductRoadmapCollectionId = firstCollection.Id;
                 }
+            }
+
+            // For tenant 2 (example tenant)
+            var exampleRoadmapCollectionsExist = db.RoadmapCollections.IgnoreQueryFilters().Any(rc => rc.TenantId == devTenant2);
+            Console.WriteLine($"Roadmap collections exist for tenant 2: {exampleRoadmapCollectionsExist}");
+            Guid exampleProductRoadmapCollectionId = Guid.Empty;
+            
+            if (!exampleRoadmapCollectionsExist) {
+                Console.WriteLine("Creating roadmap collections for tenant 2...");
+                var exampleCollections = new[]
+                {
+                    new RoadmapCollection
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Example Product Roadmap",
+                        Description = "Example product development roadmap",
+                        Index = 0,
+                        Display = true,
+                        TenantId = devTenant2
+                    }
+                };
+
+                db.RoadmapCollections.AddRange(exampleCollections);
                 db.SaveChanges();
-                Console.WriteLine("Assigned existing roadmaps to collection successfully");
+                exampleProductRoadmapCollectionId = exampleCollections[0].Id;
+                Console.WriteLine("Roadmap collections created successfully for tenant 2");
+            } else {
+                // Get the first example collection ID for later use
+                var firstExampleCollection = db.RoadmapCollections.IgnoreQueryFilters()
+                    .FirstOrDefault(rc => rc.TenantId == devTenant2 && rc.Name == "Example Product Roadmap");
+                if (firstExampleCollection != null) {
+                    exampleProductRoadmapCollectionId = firstExampleCollection.Id;
+                }
+            }
+
+            // Seed roadmaps for example tenant with collection ID
+            var exampleRoadmapsExist = db.Roadmaps.IgnoreQueryFilters().Any(r => r.TenantId == devTenant2);
+            Console.WriteLine($"Example roadmaps exist: {exampleRoadmapsExist}");
+            if (!exampleRoadmapsExist && exampleProductRoadmapCollectionId != Guid.Empty) {
+                Console.WriteLine("Creating example roadmaps...");
+                var exampleRoadmaps = new[]
+                {
+                    new Roadmap
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Example Planned",
+                        Url = "example-planned",
+                        Color = GenerateHexColor(),
+                        Index = 0,
+                        Display = true,
+                        RoadmapCollectionId = exampleProductRoadmapCollectionId,
+                        TenantId = devTenant2
+                    },
+                    new Roadmap
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Example In Progress",
+                        Url = "example-in-progress",
+                        Color = GenerateHexColor(),
+                        Index = 1,
+                        Display = true,
+                        RoadmapCollectionId = exampleProductRoadmapCollectionId,
+                        TenantId = devTenant2
+                    }
+                };
+
+                db.Roadmaps.AddRange(exampleRoadmaps);
+                db.SaveChanges();
+                Console.WriteLine("Example roadmaps created successfully");
+            } else if (exampleRoadmapsExist && exampleProductRoadmapCollectionId != Guid.Empty) {
+                // Update existing roadmaps to have a collection ID if they don't already have one
+                var unmappedExampleRoadmaps = db.Roadmaps.IgnoreQueryFilters()
+                    .Where(r => r.TenantId == devTenant2 && r.RoadmapCollectionId == null)
+                    .ToList();
+                
+                if (unmappedExampleRoadmaps.Any()) {
+                    Console.WriteLine($"Updating {unmappedExampleRoadmaps.Count} existing example roadmaps with collection ID...");
+                    foreach (var roadmap in unmappedExampleRoadmaps) {
+                        roadmap.RoadmapCollectionId = exampleProductRoadmapCollectionId;
+                    }
+                    db.SaveChanges();
+                    Console.WriteLine("Updated existing example roadmaps with collection ID");
+                }
+            } else {
+                Console.WriteLine("Example roadmaps already exist or no collection available");
             }
 
             // Seed some sample posts for example tenant if none exist
@@ -311,16 +383,24 @@ public class DevelopmentSeeder {
                     TenantId = devTenant1,
                     Title = "ImpolarInsight",
                     Description = "Track user feedback to build better products",
-                    AccentColor = "484d7c",
+                    AccentColor = "5300E8", // Updated to match primary color
                     AllowSignup = true,
                     IsPoweredBy = true,
-                    Labs = "{\"comments\": true}"
+                    Labs = "{\"comments\": true}",
+                    Theme = themeJson // Add the theme
                 };
                 db.SiteSettings.Add(settings);
                 db.SaveChanges();
                 Console.WriteLine("Site settings created successfully");
             } else {
-                Console.WriteLine("Site settings already exist");
+                // Update existing settings with theme if not already set
+                if (settings.Theme == "{}" || string.IsNullOrEmpty(settings.Theme)) {
+                    Console.WriteLine("Updating site settings with theme...");
+                    settings.Theme = themeJson;
+                    settings.AccentColor = "5300E8"; // Update accent color to match primary theme color
+                    db.SaveChanges();
+                    Console.WriteLine("Site settings theme updated successfully");
+                }
             }
 
             // Seed admin user
@@ -391,10 +471,10 @@ public class DevelopmentSeeder {
                 Console.WriteLine("Boards already exist");
             }
 
-            // Seed roadmaps
+            // Seed roadmaps with collection ID
             var roadmapsExist = db.Roadmaps.IgnoreQueryFilters().Any(r => r.TenantId == devTenant1);
             Console.WriteLine($"Roadmaps exist: {roadmapsExist}");
-            if (!roadmapsExist) {
+            if (!roadmapsExist && mainProductRoadmapCollectionId != Guid.Empty) {
                 Console.WriteLine("Creating roadmaps...");
                 var roadmaps = new[]
                 {
@@ -406,6 +486,7 @@ public class DevelopmentSeeder {
                         Color = GenerateHexColor(),
                         Index = 0,
                         Display = true,
+                        RoadmapCollectionId = mainProductRoadmapCollectionId,
                         TenantId = devTenant1
                     },
                     new Roadmap
@@ -416,6 +497,7 @@ public class DevelopmentSeeder {
                         Color = GenerateHexColor(),
                         Index = 1,
                         Display = true,
+                        RoadmapCollectionId = mainProductRoadmapCollectionId,
                         TenantId = devTenant1
                     },
                     new Roadmap
@@ -426,6 +508,7 @@ public class DevelopmentSeeder {
                         Color = GenerateHexColor(),
                         Index = 2,
                         Display = true,
+                        RoadmapCollectionId = mainProductRoadmapCollectionId,
                         TenantId = devTenant1
                     }
                 };
@@ -433,11 +516,24 @@ public class DevelopmentSeeder {
                 db.Roadmaps.AddRange(roadmaps);
                 db.SaveChanges();
                 Console.WriteLine("Roadmaps created successfully");
+            } else if (roadmapsExist && mainProductRoadmapCollectionId != Guid.Empty) {
+                // Update existing roadmaps to have a collection ID if they don't already have one
+                var unmappedRoadmaps = db.Roadmaps.IgnoreQueryFilters()
+                    .Where(r => r.TenantId == devTenant1 && r.RoadmapCollectionId == null)
+                    .ToList();
+                
+                if (unmappedRoadmaps.Any()) {
+                    Console.WriteLine($"Updating {unmappedRoadmaps.Count} existing roadmaps with collection ID...");
+                    foreach (var roadmap in unmappedRoadmaps) {
+                        roadmap.RoadmapCollectionId = mainProductRoadmapCollectionId;
+                    }
+                    db.SaveChanges();
+                    Console.WriteLine("Updated existing roadmaps with collection ID");
+                }
             } else {
-                Console.WriteLine("Roadmaps already exist");
+                Console.WriteLine("Roadmaps already exist or no collection available");
             }
             
-
             // Seed some sample posts if none exist
             var postsExist = db.Posts.IgnoreQueryFilters().Any(p => p.TenantId == devTenant1);
             Console.WriteLine($"Posts exist: {postsExist}");

@@ -84,6 +84,7 @@ namespace ImpolarInsight.Migrations
                     AllowSignup = table.Column<bool>(type: "boolean", nullable: false),
                     DeveloperMode = table.Column<bool>(type: "boolean", nullable: false),
                     Labs = table.Column<string>(type: "jsonb", nullable: false),
+                    Theme = table.Column<string>(type: "jsonb", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

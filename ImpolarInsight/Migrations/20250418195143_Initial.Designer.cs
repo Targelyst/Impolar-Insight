@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ImpolarInsight.Migrations
 {
     [DbContext(typeof(ImpolarInsightContext))]
-    [Migration("20250418153034_Initial")]
+    [Migration("20250418195143_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -285,6 +285,10 @@ namespace ImpolarInsight.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");

@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useQuery } from 'urql';
-import { graphql } from '../gql';
 import { parseThemeFromLabs, createThemeWithAccentColor, applyThemeToDOM } from '../utils/themeUtils';
 import { useGetSiteSettingsQuery } from '../api/settings';
 
@@ -29,7 +27,7 @@ export const defaultThemeColors: ThemeColors = {
     'primary-text': '#FEFEFE',
     secondary: '#D5CDFF',
     'secondary-text': '#6B12FF',
-    bg: '#FFFFFF',  // Light mode default
+    bg: '#F5F5F5',  // Light mode default
     'bg-text': '#333333',
     'bg-surface': '#F5F5F5',
     'bg-surface-text': '#333333',

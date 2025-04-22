@@ -40,7 +40,6 @@ public static class BoardQueries {
         ImpolarInsightContext db
     ) => db.Boards.Where(b => b.Url == url);
 
-    [Authorize(Policy = "user")]
     [UsePaging]
     [UseProjection]
     [UseFiltering]
@@ -76,7 +75,6 @@ public static class PostQueries {
         ImpolarInsightContext db
     ) => db.Posts.Where(p => p.Slug == slug && p.SlugId == slugId);
 
-    [Authorize(Policy = "admin")]
     [UsePaging]
     [UseProjection]
     [UseFiltering]

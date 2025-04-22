@@ -160,4 +160,7 @@ public class SiteSettings : KeyedEntity
     
     [Column(TypeName = "jsonb")]
     public string Labs { get; set; } = "{}";
+    
+    [Column(TypeName = "jsonb")]
+    public string Theme { get; set; } = "{}";
 }
