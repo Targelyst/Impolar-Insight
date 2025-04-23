@@ -5,6 +5,7 @@ import { ArticleView } from "./components/AdminDashboard/ArticleView";
 import { RoadmapsView } from "./pages/Dashboard/RoadmapsView";
 import { UserView } from "./pages/Userview/UserView";
 import Roadmap from "./pages/Userview/Roadmap";
+import FeedbackOverview from "./pages/Userview/FeedbackOverview";
 
 // Create placeholder components for the new routes
 const CalendarView = () => <div>Calendar View Content</div>;
@@ -92,7 +93,7 @@ export class RoutesAndUrls {
     public static readonly PUBLIC_FEEDBACK: PageUrlsProps = {
         pageName: i18n.t('feedback'),
         urlPath: `/${i18n.t('feedback').toLowerCase()}`,
-        component: <UserView>Feedback Component</UserView>,
+        component: <UserView><FeedbackOverview/></UserView>,
     };
 }
 
