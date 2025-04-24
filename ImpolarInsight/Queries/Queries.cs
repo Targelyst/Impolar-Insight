@@ -21,6 +21,7 @@ public static class BoardQueries {
         ImpolarInsightContext db
     ) => db.Boards.Where(b => b.Url == url);
 
+    [Authorize("admin")]
     [UsePaging]
     [UseProjection]
     [UseFiltering]
@@ -35,14 +36,12 @@ public static class BoardQueries {
         if (displayOnly == true) {
             query = query.Where(b => b.Display == true);
         }
-        
         if (rootOnly) {
             query = query.Where(b => b.ParentBoardId == null);
         }
 
         return query.OrderBy(b => b.Name);
     }
-    
     [UsePaging]
     [UseProjection]
     [UseFiltering]
@@ -79,6 +78,7 @@ public static class PostQueries {
         ImpolarInsightContext db
     ) => db.Posts.Where(p => p.Slug == slug && p.SlugId == slugId);
 
+    [Authorize("user")]
     [UsePaging]
     [UseProjection]
     [UseFiltering]
@@ -243,12 +243,12 @@ public static class UserQueries {
         ImpolarInsightContext db
     ) => db.Users.Where(u => u.Id == id);
 
-    [UseFirstOrDefault]
-    [UseProjection]
-    public static IQueryable<User> GetUserByUsername(
-        string username,
-        ImpolarInsightContext db
-    ) => db.Users.Where(u => u.Username == username);
+    // [UseFirstOrDefault]
+    // [UseProjection]
+    // public static IQueryable<User> GetUserByUsername(
+    //     string username,
+    //     ImpolarInsightContext db
+    // ) => db.Users.Where(u => u.Username == username);
 
     [UseFirstOrDefault]
     [UseProjection]
@@ -257,13 +257,13 @@ public static class UserQueries {
         ImpolarInsightContext db
     ) => db.Users.Where(u => u.Email == email);
 
-    [UsePaging]
-    [UseProjection]
-    [UseFiltering]
-    [UseSorting]
-    public static IQueryable<User> GetUsers(
-        ImpolarInsightContext db
-    ) => db.Users.OrderBy(u => u.Username);
+    // [UsePaging]
+    // [UseProjection]
+    // [UseFiltering]
+    // [UseSorting]
+    // public static IQueryable<User> GetUsers(
+    //     ImpolarInsightContext db
+    // ) => db.Users.OrderBy(u => u.Username);
 }
 
 [QueryType]
@@ -402,11 +402,9 @@ public static class ChangelogQueries {
         bool publishedOnly = false
     ) {
         var query = db.ChangelogItems.AsQueryable();
-        
         if (publishedOnly) {
             query = query.Where(c => c.IsPublished);
         }
-        
         return query.OrderByDescending(c => c.PublishedAt ?? c.CreatedAt);
     }
 
@@ -421,11 +419,9 @@ public static class ChangelogQueries {
     ) {
         var query = db.ChangelogItems
             .Where(c => c.RelatedPosts.Any(p => p.Id == postId));
-        
         if (publishedOnly) {
             query = query.Where(c => c.IsPublished);
         }
-        
         return query.OrderByDescending(c => c.PublishedAt ?? c.CreatedAt);
     }
 }

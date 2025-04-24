@@ -1,4 +1,5 @@
 using ImpolarInsight.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,6 +21,8 @@ public class DevelopmentSeeder {
     }
 
     public static void Seed(ImpolarInsightContext db) {
+        var hasher = new PasswordHasher<User>();
+
         try {
             Console.WriteLine("Starting database seeding...");
             Guid devTenant1 = Guid.Parse("00000000-0000-0000-0000-000000000001");
@@ -109,15 +112,11 @@ public class DevelopmentSeeder {
                 Console.WriteLine("Creating example admin user...");
                 exampleAdminUser = new User {
                     Id = Guid.NewGuid(),
-                    Name = "Example Admin",
-                    Email = "admin@example.com",
-                    Username = "exampleadmin",
-                    Password = HashPassword("example123"),
-                    IsVerified = true,
-                    IsOwner = true,
-                    CreatedAt = DateTime.UtcNow.AddDays(-30), // Add creation date
+                    Email = "admin2@example.com",
+                    UserName = "exampleadmin",
                     TenantId = devTenant2
                 };
+                exampleAdminUser.PasswordHash = hasher.HashPassword(exampleAdminUser, "example123");
                 db.Users.Add(exampleAdminUser);
                 db.SaveChanges();
                 Console.WriteLine("Example admin user created successfully");
@@ -128,10 +127,10 @@ public class DevelopmentSeeder {
             // Seed boards for example tenant
             var exampleBoardsExist = db.Boards.IgnoreQueryFilters().Any(b => b.TenantId == devTenant2);
             Console.WriteLine($"Example boards exist: {exampleBoardsExist}");
-            
+
             Guid exampleFeatureBoardId = Guid.Empty;
             Guid exampleBugBoardId = Guid.Empty;
-            
+
             if (!exampleBoardsExist) {
                 Console.WriteLine("Creating example boards...");
                 var exampleBoards = new[]
@@ -163,7 +162,7 @@ public class DevelopmentSeeder {
                 exampleFeatureBoardId = exampleBoards[0].Id;
                 exampleBugBoardId = exampleBoards[1].Id;
                 Console.WriteLine("Example boards created successfully");
-                
+
                 // Add subboards
                 Console.WriteLine("Creating example subboards...");
                 var exampleSubBoards = new[]
@@ -213,7 +212,7 @@ public class DevelopmentSeeder {
                         TenantId = devTenant2
                     }
                 };
-                
+
                 db.Boards.AddRange(exampleSubBoards);
                 db.SaveChanges();
                 Console.WriteLine("Example subboards created successfully");
@@ -221,13 +220,13 @@ public class DevelopmentSeeder {
                 // Get board IDs for later use
                 var exampleFeatureBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Example Feature Requests" && b.TenantId == devTenant2);
                 var exampleBugBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Example Bug Reports" && b.TenantId == devTenant2);
-                
+
                 if (exampleFeatureBoard != null) exampleFeatureBoardId = exampleFeatureBoard.Id;
                 if (exampleBugBoard != null) exampleBugBoardId = exampleBugBoard.Id;
-                
+
                 // Check if subboards exist
                 var exampleSubBoardsExist = db.Boards.IgnoreQueryFilters().Any(b => b.ParentBoardId != null && b.TenantId == devTenant2);
-                
+
                 if (!exampleSubBoardsExist && exampleFeatureBoardId != Guid.Empty && exampleBugBoardId != Guid.Empty) {
                     Console.WriteLine("Creating example subboards...");
                     var exampleSubBoards = new[]
@@ -277,7 +276,7 @@ public class DevelopmentSeeder {
                             TenantId = devTenant2
                         }
                     };
-                    
+
                     db.Boards.AddRange(exampleSubBoards);
                     db.SaveChanges();
                     Console.WriteLine("Example subboards created successfully");
@@ -289,7 +288,7 @@ public class DevelopmentSeeder {
             var roadmapCollectionsExist = db.RoadmapCollections.IgnoreQueryFilters().Any(rc => rc.TenantId == devTenant1);
             Console.WriteLine($"Roadmap collections exist for tenant 1: {roadmapCollectionsExist}");
             Guid mainProductRoadmapCollectionId = Guid.Empty;
-            
+
             if (!roadmapCollectionsExist) {
                 Console.WriteLine("Creating roadmap collections for tenant 1...");
                 var collections = new[]
@@ -331,7 +330,7 @@ public class DevelopmentSeeder {
             var exampleRoadmapCollectionsExist = db.RoadmapCollections.IgnoreQueryFilters().Any(rc => rc.TenantId == devTenant2);
             Console.WriteLine($"Roadmap collections exist for tenant 2: {exampleRoadmapCollectionsExist}");
             Guid exampleProductRoadmapCollectionId = Guid.Empty;
-            
+
             if (!exampleRoadmapCollectionsExist) {
                 Console.WriteLine("Creating roadmap collections for tenant 2...");
                 var exampleCollections = new[]
@@ -363,10 +362,10 @@ public class DevelopmentSeeder {
             // Seed roadmaps for example tenant with collection ID and icons
             var exampleRoadmapsExist = db.Roadmaps.IgnoreQueryFilters().Any(r => r.TenantId == devTenant2);
             Console.WriteLine($"Example roadmaps exist: {exampleRoadmapsExist}");
-            
+
             Guid examplePlannedRoadmapId = Guid.Empty;
             Guid exampleInProgressRoadmapId = Guid.Empty;
-            
+
             if (!exampleRoadmapsExist && exampleProductRoadmapCollectionId != Guid.Empty) {
                 Console.WriteLine("Creating example roadmaps...");
                 var exampleRoadmaps = new[]
@@ -419,16 +418,16 @@ public class DevelopmentSeeder {
                 var unmappedExampleRoadmaps = db.Roadmaps.IgnoreQueryFilters()
                     .Where(r => r.TenantId == devTenant2 && r.RoadmapCollectionId == null)
                     .ToList();
-                
+
                 // Get roadmap IDs for later use
                 var examplePlannedRoadmap = db.Roadmaps.IgnoreQueryFilters()
                     .FirstOrDefault(r => r.Name == "Example Planned" && r.TenantId == devTenant2);
                 var exampleInProgressRoadmap = db.Roadmaps.IgnoreQueryFilters()
                     .FirstOrDefault(r => r.Name == "Example In Progress" && r.TenantId == devTenant2);
-                
+
                 if (examplePlannedRoadmap != null) examplePlannedRoadmapId = examplePlannedRoadmap.Id;
                 if (exampleInProgressRoadmap != null) exampleInProgressRoadmapId = exampleInProgressRoadmap.Id;
-                
+
                 if (unmappedExampleRoadmaps.Any()) {
                     Console.WriteLine($"Updating {unmappedExampleRoadmaps.Count} existing example roadmaps with collection ID...");
                     foreach (var roadmap in unmappedExampleRoadmaps) {
@@ -437,12 +436,12 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Updated existing example roadmaps with collection ID");
                 }
-                
+
                 // Add icons to roadmaps if missing
                 var roadmapsWithoutIcons = db.Roadmaps.IgnoreQueryFilters()
                     .Where(r => r.TenantId == devTenant2 && string.IsNullOrEmpty(r.Icon))
                     .ToList();
-                
+
                 if (roadmapsWithoutIcons.Any()) {
                     Console.WriteLine($"Adding icons to {roadmapsWithoutIcons.Count} existing example roadmaps...");
                     foreach (var roadmap in roadmapsWithoutIcons) {
@@ -465,19 +464,19 @@ public class DevelopmentSeeder {
                     .FirstOrDefault(r => r.Name == "Example Planned" && r.TenantId == devTenant2);
                 var exampleInProgressRoadmap = db.Roadmaps.IgnoreQueryFilters()
                     .FirstOrDefault(r => r.Name == "Example In Progress" && r.TenantId == devTenant2);
-                
+
                 if (examplePlannedRoadmap != null) examplePlannedRoadmapId = examplePlannedRoadmap.Id;
                 if (exampleInProgressRoadmap != null) exampleInProgressRoadmapId = exampleInProgressRoadmap.Id;
-                
+
                 Console.WriteLine("Example roadmaps already exist or no collection available");
             }
 
             // Seed some sample posts for example tenant if none exist
             var examplePostsExist = db.Posts.IgnoreQueryFilters().Any(p => p.TenantId == devTenant2);
             Console.WriteLine($"Example posts exist: {examplePostsExist}");
-            
+
             List<Post> examplePosts = new List<Post>();
-            
+
             if (!examplePostsExist) {
                 Console.WriteLine("Creating example posts...");
                 var exampleFeatureBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Example Feature Requests" && b.TenantId == devTenant2);
@@ -572,11 +571,11 @@ public class DevelopmentSeeder {
                         db.SaveChanges();
                     }
                     Console.WriteLine("Example activities and comments created successfully");
-                    
+
                     // Add post roadmap history if we have posts and roadmaps
                     if (examplePosts.Count > 0 && examplePlannedRoadmapId != Guid.Empty && exampleInProgressRoadmapId != Guid.Empty) {
                         Console.WriteLine("Creating example roadmap history...");
-                        
+
                         // Move first post from null to Planned
                         db.PostRoadmapHistory.Add(new PostRoadmapHistory {
                             Id = Guid.NewGuid(),
@@ -587,7 +586,7 @@ public class DevelopmentSeeder {
                             MovedByUserId = exampleAdminUser.Id,
                             TenantId = devTenant2
                         });
-                        
+
                         // Move third post from null to Planned then to In Progress
                         db.PostRoadmapHistory.Add(new PostRoadmapHistory {
                             Id = Guid.NewGuid(),
@@ -598,7 +597,7 @@ public class DevelopmentSeeder {
                             MovedByUserId = exampleAdminUser.Id,
                             TenantId = devTenant2
                         });
-                        
+
                         db.PostRoadmapHistory.Add(new PostRoadmapHistory {
                             Id = Guid.NewGuid(),
                             PostId = examplePosts[2].Id,
@@ -608,17 +607,17 @@ public class DevelopmentSeeder {
                             MovedByUserId = exampleAdminUser.Id,
                             TenantId = devTenant2
                         });
-                        
+
                         // Update the third post's roadmap to match the history
                         examplePosts[2].RoadmapId = exampleInProgressRoadmapId;
-                        
+
                         db.SaveChanges();
                         Console.WriteLine("Example roadmap history created successfully");
                     }
-                    
+
                     // Add changelogs
                     Console.WriteLine("Creating example changelogs...");
-                    
+
                     var changelog1 = new ChangelogItem {
                         Id = Guid.NewGuid(),
                         Title = "April 2025 Feature Updates",
@@ -632,12 +631,12 @@ public class DevelopmentSeeder {
                         IsPublished = true,
                         TenantId = devTenant2
                     };
-                    
+
                     // Connect the dark mode post to this changelog
                     if (examplePosts.Count > 0) {
                         changelog1.RelatedPosts.Add(examplePosts[0]);
                     }
-                    
+
                     var changelog2 = new ChangelogItem {
                         Id = Guid.NewGuid(),
                         Title = "Upcoming PDF Export Feature",
@@ -647,12 +646,12 @@ public class DevelopmentSeeder {
                         IsPublished = false,
                         TenantId = devTenant2
                     };
-                    
+
                     // Connect the PDF export post to this changelog
                     if (examplePosts.Count > 2) {
                         changelog2.RelatedPosts.Add(examplePosts[2]);
                     }
-                    
+
                     db.ChangelogItems.Add(changelog1);
                     db.ChangelogItems.Add(changelog2);
                     db.SaveChanges();
@@ -662,12 +661,12 @@ public class DevelopmentSeeder {
                 }
             } else {
                 Console.WriteLine("Example posts already exist");
-                
+
                 // Check if we need to update posts with creation dates
                 var postsWithoutDates = db.Posts.IgnoreQueryFilters()
                     .Where(p => p.TenantId == devTenant2 && p.CreatedAt == default)
                     .ToList();
-                
+
                 if (postsWithoutDates.Any()) {
                     Console.WriteLine($"Updating {postsWithoutDates.Count} existing posts with creation dates...");
                     for (int i = 0; i < postsWithoutDates.Count; i++) {
@@ -676,17 +675,17 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Updated existing posts with creation dates");
                 }
-                
+
                 // Check if we need to create roadmap history
                 var roadmapHistoryExists = db.PostRoadmapHistory.IgnoreQueryFilters().Any(p => p.TenantId == devTenant2);
                 if (!roadmapHistoryExists) {
                     Console.WriteLine("Creating example roadmap history for existing posts...");
-                    
+
                     var existingPosts = db.Posts.IgnoreQueryFilters()
                         .Where(p => p.TenantId == devTenant2 && p.RoadmapId != null)
                         .Take(2)
                         .ToList();
-                    
+
                     if (existingPosts.Any() && examplePlannedRoadmapId != Guid.Empty && exampleInProgressRoadmapId != Guid.Empty) {
                         foreach (var post in existingPosts) {
                             db.PostRoadmapHistory.Add(new PostRoadmapHistory {
@@ -703,17 +702,17 @@ public class DevelopmentSeeder {
                         Console.WriteLine("Created roadmap history for existing posts");
                     }
                 }
-                
+
                 // Check if we need to create changelogs
                 var changelogsExist = db.ChangelogItems.IgnoreQueryFilters().Any(c => c.TenantId == devTenant2);
                 if (!changelogsExist) {
                     Console.WriteLine("Creating example changelogs for existing posts...");
-                    
+
                     var existingPosts = db.Posts.IgnoreQueryFilters()
                         .Where(p => p.TenantId == devTenant2)
                         .Take(2)
                         .ToList();
-                    
+
                     if (existingPosts.Any()) {
                         var changelog = new ChangelogItem {
                             Id = Guid.NewGuid(),
@@ -728,18 +727,18 @@ public class DevelopmentSeeder {
                             IsPublished = true,
                             TenantId = devTenant2
                         };
-                        
+
                         foreach (var post in existingPosts) {
                             changelog.RelatedPosts.Add(post);
                         }
-                        
+
                         db.ChangelogItems.Add(changelog);
                         db.SaveChanges();
                         Console.WriteLine("Created example changelog for existing posts");
                     }
                 }
             }
-            
+
             var settings = db.SiteSettings.IgnoreQueryFilters().FirstOrDefault(s => s.TenantId == devTenant1);
             Console.WriteLine($"Site settings check result: {settings != null}");
             if (settings == null) {
@@ -776,35 +775,32 @@ public class DevelopmentSeeder {
                 Console.WriteLine("Creating admin user...");
                 adminUser = new User {
                     Id = Guid.NewGuid(),
-                    Name = "Admin",
-                    Email = "admin@example.com",
-                    Username = "admin",
-                    Password = HashPassword("admin123"),
-                    IsVerified = true,
-                    IsOwner = true,
-                    CreatedAt = DateTime.UtcNow.AddDays(-30), // Add creation date
+                    Email = "admin1@example.com",
+                    UserName = "admin1",
+                    // PasswordHash = hasherHashPassword("admin123"),
                     TenantId = devTenant1
                 };
+                adminUser.PasswordHash = hasher.HashPassword(adminUser, "admin123");
                 db.Users.Add(adminUser);
                 db.SaveChanges();
                 Console.WriteLine("Admin user created successfully");
             } else {
                 // Update user with creation date if missing
-                if (adminUser.CreatedAt == default) {
-                    adminUser.CreatedAt = DateTime.UtcNow.AddDays(-30);
-                    db.SaveChanges();
-                }
+                // if (adminUser.CreatedAt == default) {
+                //     adminUser.CreatedAt = DateTime.UtcNow.AddDays(-30);
+                //     db.SaveChanges();
+                // }
                 Console.WriteLine("Admin user already exists");
             }
 
             // Seed boards
             var boardsExist = db.Boards.IgnoreQueryFilters().Any(b => b.TenantId == devTenant1);
             Console.WriteLine($"Boards exist: {boardsExist}");
-            
+
             Guid featuresBoardId = Guid.Empty;
             Guid bugsBoardId = Guid.Empty;
             Guid questionsBoardId = Guid.Empty;
-            
+
             if (!boardsExist) {
                 Console.WriteLine("Creating boards...");
                 var boards = new[]
@@ -843,13 +839,13 @@ public class DevelopmentSeeder {
 
                 db.Boards.AddRange(boards);
                 db.SaveChanges();
-                
+
                 featuresBoardId = boards[0].Id;
                 bugsBoardId = boards[1].Id;
                 questionsBoardId = boards[2].Id;
-                
+
                 Console.WriteLine("Boards created successfully");
-                
+
                 // Create subboards
                 Console.WriteLine("Creating subboards...");
                 var subBoards = new[]
@@ -908,14 +904,14 @@ public class DevelopmentSeeder {
                 var featuresBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Feature Requests" && b.TenantId == devTenant1);
                 var bugsBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Bug Reports" && b.TenantId == devTenant1);
                 var questionsBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Questions" && b.TenantId == devTenant1);
-                
+
                 if (featuresBoard != null) featuresBoardId = featuresBoard.Id;
                 if (bugsBoard != null) bugsBoardId = bugsBoard.Id;
                 if (questionsBoard != null) questionsBoardId = questionsBoard.Id;
-                
+
                 // Check if subboards exist
                 var subBoardsExist = db.Boards.IgnoreQueryFilters().Any(b => b.ParentBoardId != null && b.TenantId == devTenant1);
-                
+
                 if (!subBoardsExist && featuresBoardId != Guid.Empty && bugsBoardId != Guid.Empty) {
                     Console.WriteLine("Creating subboards...");
                     var subBoards = new[]
@@ -970,18 +966,18 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Subboards created successfully");
                 }
-                
+
                 Console.WriteLine("Boards already exist");
             }
 
             // Seed roadmaps with collection ID and icons
             var roadmapsExist = db.Roadmaps.IgnoreQueryFilters().Any(r => r.TenantId == devTenant1);
             Console.WriteLine($"Roadmaps exist: {roadmapsExist}");
-            
+
             Guid plannedRoadmapId = Guid.Empty;
             Guid inProgressRoadmapId = Guid.Empty;
             Guid completedRoadmapId = Guid.Empty;
-            
+
             if (!roadmapsExist && mainProductRoadmapCollectionId != Guid.Empty) {
                 Console.WriteLine("Creating roadmaps...");
                 var roadmaps = new[]
@@ -1026,27 +1022,27 @@ public class DevelopmentSeeder {
 
                 db.Roadmaps.AddRange(roadmaps);
                 db.SaveChanges();
-                
+
                 plannedRoadmapId = roadmaps[0].Id;
                 inProgressRoadmapId = roadmaps[1].Id;
                 completedRoadmapId = roadmaps[2].Id;
-                
+
                 Console.WriteLine("Roadmaps created successfully");
             } else if (roadmapsExist && mainProductRoadmapCollectionId != Guid.Empty) {
                 // Update existing roadmaps to have a collection ID if they don't already have one
                 var unmappedRoadmaps = db.Roadmaps.IgnoreQueryFilters()
                     .Where(r => r.TenantId == devTenant1 && r.RoadmapCollectionId == null)
                     .ToList();
-                
+
                 // Get roadmap IDs
                 var plannedRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Planned" && r.TenantId == devTenant1);
                 var inProgressRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "In Progress" && r.TenantId == devTenant1);
                 var completedRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Completed" && r.TenantId == devTenant1);
-                
+
                 if (plannedRoadmap != null) plannedRoadmapId = plannedRoadmap.Id;
                 if (inProgressRoadmap != null) inProgressRoadmapId = inProgressRoadmap.Id;
                 if (completedRoadmap != null) completedRoadmapId = completedRoadmap.Id;
-                
+
                 if (unmappedRoadmaps.Any()) {
                     Console.WriteLine($"Updating {unmappedRoadmaps.Count} existing roadmaps with collection ID...");
                     foreach (var roadmap in unmappedRoadmaps) {
@@ -1055,12 +1051,12 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Updated existing roadmaps with collection ID");
                 }
-                
+
                 // Add icons to roadmaps if missing
                 var roadmapsWithoutIcons = db.Roadmaps.IgnoreQueryFilters()
                     .Where(r => r.TenantId == devTenant1 && string.IsNullOrEmpty(r.Icon))
                     .ToList();
-                
+
                 if (roadmapsWithoutIcons.Any()) {
                     Console.WriteLine($"Adding icons to {roadmapsWithoutIcons.Count} existing roadmaps...");
                     foreach (var roadmap in roadmapsWithoutIcons) {
@@ -1082,20 +1078,20 @@ public class DevelopmentSeeder {
                 var plannedRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Planned" && r.TenantId == devTenant1);
                 var inProgressRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "In Progress" && r.TenantId == devTenant1);
                 var completedRoadmap = db.Roadmaps.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Completed" && r.TenantId == devTenant1);
-                
+
                 if (plannedRoadmap != null) plannedRoadmapId = plannedRoadmap.Id;
                 if (inProgressRoadmap != null) inProgressRoadmapId = inProgressRoadmap.Id;
                 if (completedRoadmap != null) completedRoadmapId = completedRoadmap.Id;
-                
+
                 Console.WriteLine("Roadmaps already exist or no collection available");
             }
-            
+
             // Seed some sample posts if none exist
             var postsExist = db.Posts.IgnoreQueryFilters().Any(p => p.TenantId == devTenant1);
             Console.WriteLine($"Posts exist: {postsExist}");
-            
+
             List<Post> posts = new List<Post>();
-            
+
             if (!postsExist) {
                 Console.WriteLine("Creating posts...");
                 var featureBoard = db.Boards.IgnoreQueryFilters().FirstOrDefault(b => b.Name == "Feature Requests" && b.TenantId == devTenant1);
@@ -1203,11 +1199,11 @@ public class DevelopmentSeeder {
                         db.SaveChanges();
                     }
                     Console.WriteLine("Activities and comments created successfully");
-                    
+
                     // Add post roadmap history
                     if (posts.Count > 0 && plannedRoadmapId != Guid.Empty && inProgressRoadmapId != Guid.Empty) {
                         Console.WriteLine("Creating roadmap history...");
-                        
+
                         // First post - from null to planned
                         db.PostRoadmapHistory.Add(new PostRoadmapHistory {
                             Id = Guid.NewGuid(),
@@ -1218,7 +1214,7 @@ public class DevelopmentSeeder {
                             MovedByUserId = adminUser.Id,
                             TenantId = devTenant1
                         });
-                        
+
                         // Last post - from null to planned
                         db.PostRoadmapHistory.Add(new PostRoadmapHistory {
                             Id = Guid.NewGuid(),
@@ -1229,7 +1225,7 @@ public class DevelopmentSeeder {
                             MovedByUserId = adminUser.Id,
                             TenantId = devTenant1
                         });
-                        
+
                         // Move third post from null to in-progress
                         db.PostRoadmapHistory.Add(new PostRoadmapHistory {
                             Id = Guid.NewGuid(),
@@ -1240,17 +1236,17 @@ public class DevelopmentSeeder {
                             MovedByUserId = adminUser.Id,
                             TenantId = devTenant1
                         });
-                        
+
                         // Update the third post's roadmap
                         posts[2].RoadmapId = inProgressRoadmapId;
-                        
+
                         db.SaveChanges();
                         Console.WriteLine("Roadmap history created successfully");
                     }
-                    
+
                     // Add changelogs
                     Console.WriteLine("Creating changelogs...");
-                    
+
                     var changelog1 = new ChangelogItem {
                         Id = Guid.NewGuid(),
                         Title = "April 2025 Updates",
@@ -1268,13 +1264,13 @@ public class DevelopmentSeeder {
                         IsPublished = true,
                         TenantId = devTenant1
                     };
-                    
+
                     // Connect posts to changelog
                     if (posts.Count >= 2) {
                         changelog1.RelatedPosts.Add(posts[0]); // Dark mode
                         changelog1.RelatedPosts.Add(posts[1]); // Login issue
                     }
-                    
+
                     var changelog2 = new ChangelogItem {
                         Id = Guid.NewGuid(),
                         Title = "Coming Soon: Keyboard Shortcuts",
@@ -1290,12 +1286,12 @@ public class DevelopmentSeeder {
                         IsPublished = false,
                         TenantId = devTenant1
                     };
-                    
+
                     // Connect keyboard shortcuts post to changelog
                     if (posts.Count >= 3) {
                         changelog2.RelatedPosts.Add(posts[2]); // Keyboard shortcuts
                     }
-                    
+
                     db.ChangelogItems.Add(changelog1);
                     db.ChangelogItems.Add(changelog2);
                     db.SaveChanges();
@@ -1305,12 +1301,12 @@ public class DevelopmentSeeder {
                 }
             } else {
                 Console.WriteLine("Posts already exist");
-                
+
                 // Check if we need to update existing posts with dates
                 var postsWithoutDates = db.Posts.IgnoreQueryFilters()
                     .Where(p => p.TenantId == devTenant1 && p.CreatedAt == default)
                     .ToList();
-                
+
                 if (postsWithoutDates.Any()) {
                     Console.WriteLine($"Updating {postsWithoutDates.Count} existing posts with creation dates...");
                     for (int i = 0; i < postsWithoutDates.Count; i++) {
@@ -1319,12 +1315,12 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Updated existing posts with creation dates");
                 }
-                
+
                 // Check if we need to update comments with dates
                 var commentsWithoutDates = db.Comments.IgnoreQueryFilters()
                     .Where(c => c.TenantId == devTenant1 && c.CreatedAt == default)
                     .ToList();
-                
+
                 if (commentsWithoutDates.Any()) {
                     Console.WriteLine($"Updating {commentsWithoutDates.Count} existing comments with creation dates...");
                     foreach (var comment in commentsWithoutDates) {
@@ -1333,12 +1329,12 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Updated existing comments with creation dates");
                 }
-                
+
                 // Check if we need to update activities with dates
                 var activitiesWithoutDates = db.PostActivities.IgnoreQueryFilters()
                     .Where(a => a.TenantId == devTenant1 && a.CreatedAt == default)
                     .ToList();
-                
+
                 if (activitiesWithoutDates.Any()) {
                     Console.WriteLine($"Updating {activitiesWithoutDates.Count} existing activities with creation dates...");
                     foreach (var activity in activitiesWithoutDates) {
@@ -1347,12 +1343,12 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Updated existing activities with creation dates");
                 }
-                
+
                 // Check if we need to update votes with dates
                 var votesWithoutDates = db.Votes.IgnoreQueryFilters()
                     .Where(v => v.TenantId == devTenant1 && v.CreatedAt == default)
                     .ToList();
-                
+
                 if (votesWithoutDates.Any()) {
                     Console.WriteLine($"Updating {votesWithoutDates.Count} existing votes with creation dates...");
                     foreach (var vote in votesWithoutDates) {
@@ -1361,17 +1357,17 @@ public class DevelopmentSeeder {
                     db.SaveChanges();
                     Console.WriteLine("Updated existing votes with creation dates");
                 }
-                
+
                 // Check if we need to create roadmap history
                 var roadmapHistoryExists = db.PostRoadmapHistory.IgnoreQueryFilters().Any(p => p.TenantId == devTenant1);
                 if (!roadmapHistoryExists) {
                     Console.WriteLine("Creating roadmap history for existing posts...");
-                    
+
                     var existingPostsWithRoadmaps = db.Posts.IgnoreQueryFilters()
                         .Where(p => p.TenantId == devTenant1 && p.RoadmapId != null)
                         .Take(3)
                         .ToList();
-                    
+
                     if (existingPostsWithRoadmaps.Any()) {
                         foreach (var post in existingPostsWithRoadmaps) {
                             db.PostRoadmapHistory.Add(new PostRoadmapHistory {
@@ -1388,17 +1384,17 @@ public class DevelopmentSeeder {
                         Console.WriteLine("Created roadmap history for existing posts");
                     }
                 }
-                
+
                 // Check if we need to create changelogs
                 var changelogsExist = db.ChangelogItems.IgnoreQueryFilters().Any(c => c.TenantId == devTenant1);
                 if (!changelogsExist) {
                     Console.WriteLine("Creating changelogs for existing posts...");
-                    
+
                     var existingPosts = db.Posts.IgnoreQueryFilters()
                         .Where(p => p.TenantId == devTenant1)
                         .Take(3)
                         .ToList();
-                    
+
                     if (existingPosts.Any()) {
                         var changelog = new ChangelogItem {
                             Id = Guid.NewGuid(),
@@ -1414,11 +1410,11 @@ public class DevelopmentSeeder {
                             IsPublished = true,
                             TenantId = devTenant1
                         };
-                        
+
                         foreach (var post in existingPosts) {
                             changelog.RelatedPosts.Add(post);
                         }
-                        
+
                         db.ChangelogItems.Add(changelog);
                         db.SaveChanges();
                         Console.WriteLine("Created changelog for existing posts");

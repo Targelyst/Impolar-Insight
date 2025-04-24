@@ -4,14 +4,15 @@ using Microsoft.IdentityModel.Tokens;
 using ImpolarInsight.Configuration;
 using ImpolarInsight.Data;
 using ImpolarInsight.Services;
+using ImpolarInsight.Models;
+using Microsoft.AspNetCore.Identity;
+using ImpolarInsight.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add CORS policy
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy(policy => {
         policy
             .WithOrigins(
                 "http://localhost:5173",     // Vite development server
@@ -49,40 +50,77 @@ builder.Services.AddDbContextFactory<ImpolarInsightContext>(opt => {
     }
 });
 
+// builder.Services
+//     .AddAuthentication(o => {
+//         o.DefaultScheme = IdentityConstants.ApplicationScheme;
+//         o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+//     })
+//     .AddIdentityCookies(o => { });
+//
+// builder.Services
+//     .AddIdentityCore<User>(o => {
+//         o.Stores.MaxLengthForKeys = 128;
+//         // o.SignIn.RequireConfirmedAccount = true;
+//     })
+//     .AddDefaultTokenProviders();
+//
+// builder.Services
+//     .AddIdentity<User, IdentityRole>();
+
 builder.Services
-    .AddHttpContextAccessor();
-// .AddScoped<IAuthorizationHandler, HasTenantHandler>();
+    .AddIdentityApiEndpoints<User>()
+    .AddRoles<IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<ImpolarInsightContext>();
 
-if (!builder.Environment.IsDevelopment()) {
-    builder.Services
-        .AddScoped<IUserService, UserService>()
-        .AddAuthentication()
-        .AddJwtBearer(options => {
-            options.RequireHttpsMetadata = false;
-            options.MetadataAddress = authConfig.MetadataAddress;
+builder.Services
+    .AddScoped<IAuthorizationHandler, BelongsToCurrentDomainHandler>()
+    .AddAuthorization(opts => {
+        var userPolicyBuilder = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .RequireRole("User");
 
-            options.TokenValidationParameters = new TokenValidationParameters {
-                ValidAudience = authConfig.Audience,
-                RoleClaimType = authConfig.RolesClaim,
-            };
-        });
+        var adminPolicyBuilder = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .RequireRole("Administrator")
+            .AddRequirements(new BelongsToCurrentDomainRequirement());
 
-    builder.Services.AddAuthorization(opts => {
-        var tenantsUsersAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder()
-            .RequireClaim(authConfig.TenantClaim)
-            .RequireAuthenticatedUser();
-
-        var tenantsAdminsAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder()
-            .RequireClaim(authConfig.TenantClaim)
-            .RequireRole(authConfig.AdminRole)
-            .RequireAuthenticatedUser();
-
-        opts.AddPolicy("user", tenantsUsersAuthorizationPolicyBuilder.Build());
-        opts.AddPolicy("admin", tenantsAdminsAuthorizationPolicyBuilder.Build());
+        opts.AddPolicy("user", userPolicyBuilder.Build());
+        opts.AddPolicy("admin", adminPolicyBuilder.Build());
 
         // opts.DefaultPolicy = tenantsAdminsAuthorizationPolicyBuilder.Build();
         // opts.FallbackPolicy = opts.DefaultPolicy;
     });
+
+if (!builder.Environment.IsDevelopment()) {
+    // builder.Services
+    //     .AddScoped<IUserService, UserService>()
+    //     .AddAuthentication()
+    //     .AddJwtBearer(options => {
+    //         options.RequireHttpsMetadata = false;
+    //         options.MetadataAddress = authConfig.MetadataAddress;
+    //
+    //         options.TokenValidationParameters = new TokenValidationParameters {
+    //             ValidAudience = authConfig.Audience,
+    //             RoleClaimType = authConfig.RolesClaim,
+    //         };
+    //     });
+
+    // builder.Services.AddAuthorization(opts => {
+    //     var tenantsUsersAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder()
+    //         .RequireClaim(authConfig.TenantClaim)
+    //         .RequireAuthenticatedUser();
+    //
+    //     var tenantsAdminsAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder()
+    //         .RequireClaim(authConfig.TenantClaim)
+    //         .RequireRole(authConfig.AdminRole)
+    //         .RequireAuthenticatedUser();
+    //
+    //     opts.AddPolicy("user", tenantsUsersAuthorizationPolicyBuilder.Build());
+    //     opts.AddPolicy("admin", tenantsAdminsAuthorizationPolicyBuilder.Build());
+    //
+    //     // opts.DefaultPolicy = tenantsAdminsAuthorizationPolicyBuilder.Build();
+    //     // opts.FallbackPolicy = opts.DefaultPolicy;
+    // });
 } else {
     builder.Services.AddScoped<IUserService, DevelopmentUserService>();
 }
@@ -124,10 +162,16 @@ app.UseCors();
 if (app.Environment.IsDevelopment()) {
     app.UseSeeding();
 } else {
-    app.UseAuthentication();
-    app.UseAuthorization();
+    // app.UseAuthentication();
+    // app.UseAuthorization();
 }
 
+await app.SeedRoles();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGraphQL();
+app.MapIdentityApi<User>();
 
 app.RunWithGraphQLCommands(args);

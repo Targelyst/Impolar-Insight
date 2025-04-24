@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using ImpolarInsight.Models;
 using ImpolarInsight.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace ImpolarInsight.Data;
 
-public class ImpolarInsightContext : DbContext {
+public class ImpolarInsightContext : IdentityDbContext<User, IdentityRole<Guid>, Guid> {
 
     private readonly IServiceScope serviceScope;
     private readonly IUserService userService;
@@ -18,34 +20,35 @@ public class ImpolarInsightContext : DbContext {
     }
 
     // Feedback management models
-    public DbSet<Board> Boards { get; set; }
-    public DbSet<Post> Posts { get; set; }
-    public DbSet<Vote> Votes { get; set; }
-    public DbSet<Roadmap> Roadmaps { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Comment> Comments { get; set; }
-    public DbSet<PostActivity> PostActivities { get; set; }
-    public DbSet<SiteSettings> SiteSettings { get; set; }
-    public DbSet<Tenant> Tenants { get; set; }
-    public DbSet<RoadmapCollection> RoadmapCollections { get; set; }
-    
+    public DbSet<Board> Boards { get; set; } = null!;
+    public DbSet<Post> Posts { get; set; } = null!;
+    public DbSet<Vote> Votes { get; set; } = null!;
+    public DbSet<Roadmap> Roadmaps { get; set; } = null!;
+    public DbSet<Comment> Comments { get; set; } = null!;
+    public DbSet<PostActivity> PostActivities { get; set; } = null!;
+    public DbSet<SiteSettings> SiteSettings { get; set; } = null!;
+    public DbSet<Tenant> Tenants { get; set; } = null!;
+    public DbSet<RoadmapCollection> RoadmapCollections { get; set; } = null!;
+
     // New entities
-    public DbSet<PostRoadmapHistory> PostRoadmapHistory { get; set; }
-    public DbSet<ChangelogItem> ChangelogItems { get; set; }
+    public DbSet<PostRoadmapHistory> PostRoadmapHistory { get; set; } = null!;
+    public DbSet<ChangelogItem> ChangelogItems { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        base.OnModelCreating(modelBuilder);
+
         // Apply tenant filter to all entities derived from Entity
         modelBuilder.Entity<Board>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Post>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Vote>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Roadmap>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
-        modelBuilder.Entity<User>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
+        // modelBuilder.Entity<User>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Comment>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<PostActivity>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<SiteSettings>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<Tenant>().HasQueryFilter(e => e.Domain == userService.TenantDomain);
         modelBuilder.Entity<RoadmapCollection>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
-        
+
         // New entities tenant filters
         modelBuilder.Entity<PostRoadmapHistory>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
         modelBuilder.Entity<ChangelogItem>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);
@@ -117,32 +120,32 @@ public class ImpolarInsightContext : DbContext {
             .WithMany()
             .HasForeignKey(pa => pa.AuthorId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         // Configure PostRoadmapHistory relationships
         modelBuilder.Entity<PostRoadmapHistory>()
             .HasOne(prh => prh.Post)
             .WithMany(p => p.RoadmapHistory)
             .HasForeignKey(prh => prh.PostId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         modelBuilder.Entity<PostRoadmapHistory>()
             .HasOne(prh => prh.FromRoadmap)
             .WithMany()
             .HasForeignKey(prh => prh.FromRoadmapId)
             .OnDelete(DeleteBehavior.SetNull);
-            
+
         modelBuilder.Entity<PostRoadmapHistory>()
             .HasOne(prh => prh.ToRoadmap)
             .WithMany(r => r.PostHistory)
             .HasForeignKey(prh => prh.ToRoadmapId)
             .OnDelete(DeleteBehavior.SetNull);
-            
+
         modelBuilder.Entity<PostRoadmapHistory>()
             .HasOne(prh => prh.MovedByUser)
             .WithMany()
             .HasForeignKey(prh => prh.MovedByUserId)
             .OnDelete(DeleteBehavior.SetNull);
-            
+
         // Configure Changelog relationships
         modelBuilder.Entity<ChangelogItem>()
             .HasMany(c => c.RelatedPosts)
