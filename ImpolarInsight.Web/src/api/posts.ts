@@ -105,12 +105,17 @@ const getPostsByBoardQuery = graphql(/* GraphQL */ `
           title
           slug
           slugId
+          contentMarkdown
           votes {
             id
           }
           roadmap {
             id
             name
+          }
+          activities {
+            id
+            type
           }
         }
       }

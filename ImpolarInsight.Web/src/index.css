@@ -11,14 +11,14 @@
   
   /* Define default theme variables - these will be overridden by JS */
   :root {
-    --color-impolar-primary: #5300E8;
+    --color-impolar-primary: #ffffff;
     --color-impolar-primary-text: #FEFEFE;
     --color-impolar-secondary: #D5CDFF;
     --color-impolar-secondary-text: #6B12FF;
-    --color-impolar-bg: #0E0E11;
+    --color-impolar-bg: #2525f1;
     --color-impolar-bg-text: #FAFAFA;
     --color-impolar-bg-surface: #0b0be6;
-    --color-impolar-bg-surface-text: #FAFAFA;
+    --color-impolar-bg-surface-text: #080808;
     --color-impolar-bg-highlight: #28252D;
     --color-impolar-bg-highlight-text: #FAFAFA;
   }
