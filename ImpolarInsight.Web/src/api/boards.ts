@@ -11,6 +11,7 @@ const getBoardQuery = graphql(/* GraphQL */ `
       color
       display
       viewVoters
+      parentBoardId
       posts {
         id
         title
@@ -31,6 +32,7 @@ const getBoardByUrlQuery = graphql(/* GraphQL */ `
       color
       display
       viewVoters
+      parentBoardId
       posts {
         id
         title
@@ -54,6 +56,7 @@ const getBoardsQuery = graphql(/* GraphQL */ `
           color
           display
           viewVoters
+          parentBoardId
         }
       }
       pageInfo {

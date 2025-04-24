@@ -17,7 +17,7 @@
     --color-impolar-secondary-text: #6B12FF;
     --color-impolar-bg: #0E0E11;
     --color-impolar-bg-text: #FAFAFA;
-    --color-impolar-bg-surface: #18181B;
+    --color-impolar-bg-surface: #0b0be6;
     --color-impolar-bg-surface-text: #FAFAFA;
     --color-impolar-bg-highlight: #28252D;
     --color-impolar-bg-highlight-text: #FAFAFA;
@@ -43,47 +43,6 @@
   color: --value(--color-impolar-*-text);
 }
 
-/* Add theme utility classes for easy access */
-.bg-primary {
-  background-color: var(--color-impolar-primary);
-  color: var(--color-impolar-primary-text);
-}
-
-.bg-secondary {
-  background-color: var(--color-impolar-secondary);
-  color: var(--color-impolar-secondary-text);
-}
-
-.bg-main {
-  background-color: var(--color-impolar-bg);
-  color: var(--color-impolar-bg-text);
-}
-
-.bg-surface {
-  background-color: var(--color-impolar-bg-surface);
-  color: var(--color-impolar-bg-surface-text);
-}
-
-.bg-highlight {
-  background-color: var(--color-impolar-bg-highlight);
-  color: var(--color-impolar-bg-highlight-text);
-}
-
-.text-primary {
-  color: var(--color-impolar-primary);
-}
-
-.text-secondary {
-  color: var(--color-impolar-secondary);
-}
-
-.border-primary {
-  border-color: var(--color-impolar-primary);
-}
-
-.border-secondary {
-  border-color: var(--color-impolar-secondary);
-}
 
 @keyframes fadeIn {
   from {

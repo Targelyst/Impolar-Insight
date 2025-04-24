@@ -43,11 +43,9 @@ const ThemeContext = createContext<ThemeContextType>({
 
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    console.log('ThemeProvider rendered');
     const [isLoading, setIsLoading] = useState(true);
     const [themeColors, setThemeColors] = useState<ThemeColors | null>(defaultThemeColors);
     const [result] = useGetSiteSettingsQuery();
-    console.log('Query result:', result);
 
     // Apply theme when it changes
     useEffect(() => {
@@ -61,23 +59,19 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         if (result.data?.siteSettings) {
             const settings = result.data.siteSettings;
 
-            console.log('Site settings:', settings);
 
             try {
                 // Priority 1: Try to parse the theme field directly from settings
                 let themeColors: ThemeColors | null = null;
                 
                 if (settings.theme) {
-                    console.log('Theme data found:', settings.theme);
                     try {
                         const parsedTheme = JSON.parse(settings.theme);
-                        console.log('Parsed theme data:', parsedTheme);
                         
                         // Check if the parsed theme has the necessary properties
                         if (parsedTheme && typeof parsedTheme === 'object') {
                             // Merge with default theme to ensure all properties exist
                             themeColors = { ...defaultThemeColors, ...parsedTheme };
-                            console.log('Valid theme found in theme field:', themeColors);
                         }
                     } catch (error) {
                         console.error('Error parsing theme JSON:', error);
@@ -86,24 +80,19 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
                 // Priority 2: If no theme from theme field, try to parse from labs
                 if (!themeColors && settings.labs) {
-                    console.log('Labs data:', settings.labs);
                     themeColors = parseThemeFromLabs(settings.labs);
-                    console.log('Theme parsed from labs:', themeColors);
                 }
 
                 // Priority 3: If no theme found in theme field or labs, but we have accentColor, create a theme with it
                 if (!themeColors && settings.accentColor) {
-                    console.log('Creating theme from accent color:', settings.accentColor);
                     themeColors = createThemeWithAccentColor(
                         settings.accentColor,
                         defaultThemeColors
                     );
-                    console.log('Theme created from accent color:', themeColors);
                 }
 
                 // Use the parsed theme or fallback to default
                 if (themeColors) {
-                    console.log('Setting theme colors:', themeColors);
                     setThemeColors(themeColors);
                 } else {
                     // Apply default theme if parsing fails
@@ -115,7 +104,6 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 setThemeColors(defaultThemeColors);
             }
 
-            console.log('Theme colors set:', themeColors);
 
             setIsLoading(false);
         }

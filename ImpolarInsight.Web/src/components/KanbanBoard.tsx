@@ -1,8 +1,7 @@
 import React from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { BsListUl, BsPlayFill, BsHourglassSplit, BsCheckCircleFill, BsLightbulbFill, BsPlus } from 'react-icons/bs';
-import { useTheme } from '../contexts/ThemeContext';
+import { BsLightbulbFill, BsPlus } from 'react-icons/bs';
 
 // Types
 export type KanbanItem = {
@@ -35,8 +34,6 @@ const ITEM_TYPE = 'KANBAN_ITEM';
 
 // Robot placeholder SVG for empty columns
 const EmptyColumnIcon: React.FC = () => {
-  const { themeColors } = useTheme();
-  
   return (
     <svg
       width="64"
@@ -44,7 +41,7 @@ const EmptyColumnIcon: React.FC = () => {
       viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ color: themeColors?.['bg-highlight-text'] || '#9CA3AF' }}
+      className="text-impolar-bg-highlight-text"
     >
       <rect 
         x="18" 
@@ -54,7 +51,7 @@ const EmptyColumnIcon: React.FC = () => {
         rx="5" 
         stroke="currentColor" 
         strokeWidth="2" 
-        fill={themeColors?.['bg-highlight'] || '#F1F5F9'} 
+        className="fill-impolar-bg-highlight" 
       />
       <circle cx="26" cy="28" r="3" fill="currentColor" />
       <circle cx="38" cy="28" r="3" fill="currentColor" />
@@ -72,8 +69,6 @@ const Card: React.FC<{
   columnId: string;
   isDraggable: boolean;
 }> = ({ item, columnId, isDraggable }) => {
-  const { themeColors } = useTheme();
-  
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ITEM_TYPE,
     item: { id: item.id, sourceColumnId: columnId },
@@ -83,37 +78,19 @@ const Card: React.FC<{
     canDrag: isDraggable,
   }));
 
-  const getLabelStyles = (type: string) => {
+  const getLabelClasses = (type: string) => {
     if (type === 'feature') {
-      return {
-        backgroundColor: themeColors?.secondary || '#FEF3C7',
-        color: themeColors?.['secondary-text'] || '#92400E',
-      };
+      return 'bg-impolar-secondary text-impolar-secondary-text';
     }
-    return {
-      backgroundColor: themeColors?.['bg-highlight'] || '#F3F4F6',
-      color: themeColors?.['bg-highlight-text'] || '#374151',
-    };
-  };
-
-  const cardStyle = {
-    backgroundColor: themeColors?.['bg-surface'] || 'white',
-    color: themeColors?.['bg-surface-text'] || '#374151',
-    borderColor: themeColors?.['bg-highlight'] || '#E5E7EB',
-  };
-
-  const metadataStyle = {
-    backgroundColor: themeColors?.['bg-highlight'] || '#F3F4F6',
-    color: themeColors?.['bg-highlight-text'] || '#6B7280',
+    return 'bg-impolar-bg-highlight text-impolar-bg-highlight-text';
   };
 
   return (
     <div
       ref={drag}
-      className={`p-3 mb-2 rounded-md shadow hover:shadow-md transition-shadow ${
-        isDragging ? 'opacity-50' : 'opacity-100'
-      } ${isDraggable ? 'cursor-grab' : ''}`}
-      style={cardStyle}
+      className={`p-3 mb-2 rounded-md shadow hover:shadow-md transition-shadow bg-impolar-bg-surface text-impolar-bg-surface-text border border-impolar-bg-highlight
+      ${isDragging ? 'opacity-50' : 'opacity-100'} 
+      ${isDraggable ? 'cursor-grab' : ''}`}
     >
       <div className="text-sm font-medium">{item.title}</div>
       <div className="flex items-center justify-between mt-2">
@@ -121,8 +98,7 @@ const Card: React.FC<{
           {item.labels?.map((label, index) => (
             <div
               key={index}
-              className="flex items-center px-2 py-0.5 text-xs rounded-full"
-              style={getLabelStyles(label.type)}
+              className={`flex items-center px-2 py-0.5 text-xs rounded-full ${getLabelClasses(label.type)}`}
             >
               {label.type === 'feature' && <BsLightbulbFill className="mr-1" size={10} />}
               {label.text}
@@ -131,12 +107,12 @@ const Card: React.FC<{
         </div>
         <div className="flex items-center gap-2">
           {item.date && (
-            <div className="text-xs px-2 py-0.5 rounded" style={metadataStyle}>
+            <div className="text-xs px-2 py-0.5 rounded bg-impolar-bg-highlight text-impolar-bg-highlight-text">
               {item.date}
             </div>
           )}
           {typeof item.count !== 'undefined' && (
-            <div className="flex items-center gap-1 text-xs px-2 py-0.5 rounded" style={metadataStyle}>
+            <div className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-impolar-bg-highlight text-impolar-bg-highlight-text">
               <span>{item.count}</span>
             </div>
           )}
@@ -153,8 +129,6 @@ const Column: React.FC<{
   onAddItem?: (columnId: string) => void;
   onDrop?: (itemId: string, sourceColumnId: string, targetColumnId: string) => void;
 }> = ({ column, isDndEnabled, onAddItem, onDrop }) => {
-  const { themeColors } = useTheme();
-  
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ITEM_TYPE,
     drop: (item: { id: string; sourceColumnId: string }) => {
@@ -168,102 +142,42 @@ const Column: React.FC<{
     canDrop: () => isDndEnabled,
   }));
 
-  // Determine icon color based on column title
-  const getIconColors = () => {
+  // Determine icon class based on column title
+  const getIconClasses = () => {
     switch (column.title) {
       case 'Backlog':
-        return {
-          bg: themeColors?.['bg-highlight'] || '#F3E8FF',
-          color: themeColors?.primary || '#7E22CE',
-        };
+        return 'bg-impolar-bg-highlight text-impolar-primary';
       case 'Next up':
-        return {
-          bg: themeColors?.['bg-highlight'] || '#E0E7FF',
-          color: themeColors?.secondary || '#4F46E5',
-        };
+        return 'bg-impolar-bg-highlight text-impolar-secondary';
       case 'In Progress':
-        return {
-          bg: themeColors?.['bg-highlight'] || '#DBEAFE',
-          color: themeColors?.['primary-text'] || '#2563EB',
-        };
+        return 'bg-impolar-bg-highlight text-impolar-primary-text';
       case 'Done':
-        return {
-          bg: themeColors?.['bg-highlight'] || '#DCFCE7',
-          color: themeColors?.secondary || '#16A34A',
-        };
+        return 'bg-impolar-bg-highlight text-impolar-secondary';
       default:
-        return {
-          bg: themeColors?.['bg-highlight'] || '#F3F4F6',
-          color: themeColors?.['bg-highlight-text'] || '#4B5563',
-        };
+        return 'bg-impolar-bg-highlight text-impolar-bg-highlight-text';
     }
-  };
-
-  const iconColors = getIconColors();
-  
-  const columnStyle = {
-    backgroundColor: themeColors?.['bg-surface'] || '#F9FAFB',
-    borderColor: themeColors?.['bg-highlight'] || '#E5E7EB',
-  };
-  
-  const columnHeaderStyle = {
-    borderColor: themeColors?.['bg-highlight'] || '#E5E7EB',
-  };
-  
-  const iconStyle = {
-    backgroundColor: iconColors.bg,
-    color: iconColors.color,
-  };
-  
-  const headerTextStyle = {
-    color: themeColors?.['bg-surface-text'] || '#374151',
-  };
-  
-  const countBadgeStyle = {
-    backgroundColor: themeColors?.['bg-highlight'] || '#E5E7EB',
-    color: themeColors?.['bg-highlight-text'] || '#374151',
-  };
-  
-  const buttonStyle = {
-    color: themeColors?.['bg-highlight-text'] || '#6B7280',
-  };
-  
-  const hoverButtonStyle = {
-    color: themeColors?.['bg-surface-text'] || '#374151',
-    backgroundColor: themeColors?.['bg-highlight'] || '#E5E7EB',
   };
 
   return (
     <div
       ref={drop}
-      className={`flex-1 min-w-[250px] max-w-[300px] border rounded-md ${
-        isOver && isDndEnabled ? 'bg-opacity-80' : ''
-      }`}
-      style={columnStyle}
+      className={`flex-1 min-w-[250px] max-w-[300px] border rounded-md bg-impolar-bg-surface border-impolar-bg-highlight
+      ${isOver && isDndEnabled ? 'bg-opacity-80' : ''}`}
     >
-      <div className="p-2 border-b" style={columnHeaderStyle}>
+      <div className="p-2 border-b border-impolar-bg-highlight">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="p-1.5 rounded-md mr-2" style={iconStyle}>
+            <div className={`p-1.5 rounded-md mr-2 ${getIconClasses()}`}>
               {column.icon}
             </div>
-            <h3 className="font-medium" style={headerTextStyle}>{column.title}</h3>
-            <div className="ml-2 text-xs px-2 py-0.5 rounded-full" style={countBadgeStyle}>
+            <h3 className="font-medium text-impolar-bg-surface-text">{column.title}</h3>
+            <div className="ml-2 text-xs px-2 py-0.5 rounded-full bg-impolar-bg-highlight text-impolar-bg-highlight-text">
               {column.items.length}
             </div>
           </div>
           <button
             onClick={() => onAddItem && onAddItem(column.id)}
-            className="p-1 rounded-md transition-colors hover:bg-opacity-80"
-            style={buttonStyle}
-            onMouseOver={(e) => {
-              e.currentTarget.style.color = hoverButtonStyle.color;
-              e.currentTarget.style.backgroundColor = hoverButtonStyle.backgroundColor;
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.color = buttonStyle.color;
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
+            className="p-1 rounded-md transition-colors hover:bg-impolar-bg-highlight text-impolar-bg-highlight-text hover:text-impolar-bg-surface-text"
             aria-label={`Add item to ${column.title}`}
           >
             <BsPlus size={16} />
@@ -276,7 +190,7 @@ const Column: React.FC<{
             <Card key={item.id} item={item} columnId={column.id} isDraggable={isDndEnabled} />
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center py-10" style={{ color: themeColors?.['bg-highlight-text'] || '#9CA3AF' }}>
+          <div className="flex flex-col items-center justify-center py-10 text-impolar-bg-highlight-text">
             <EmptyColumnIcon />
             <p className="mt-2 text-sm">No {column.title} posts</p>
           </div>
@@ -293,15 +207,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onItemMove,
   onAddItem,
 }) => {
-  const { themeColors } = useTheme();
-  
-  const boardStyle = {
-    backgroundColor: themeColors?.bg || '#F9FAFB',
-  };
-  
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex gap-4 overflow-x-auto p-4" style={boardStyle}>
+      <div className="flex gap-4 overflow-x-auto p-4 bg-impolar-bg">
         {columns.map((column) => (
           <Column
             key={column.id}

@@ -15,14 +15,14 @@ export const UserView = ({ children }: UserViewProps) => {
   const rm = RoutesAndUrls.PUBLIC_ROADMAP
 
   return (
-    <div className="min-h-screen w-screen bg-main">
+    <div className="min-h-screen w-screen bg-impolar-bg">
       {/* HEADER */}
-      <header className="bg-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="bg-impolar-bg-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo / Site Name */}
             <Link to="/" className="flex items-center">
-              <span className="ml-2 text-xl font-bold">
+              <span className="ml-2 text-xl font-bold text-impolar-bg-surface-text">
                 Impo
               </span>
             </Link>
@@ -32,19 +32,19 @@ export const UserView = ({ children }: UserViewProps) => {
               {/* notifications */}
               <button
                 type="button"
-                className="rounded-full p-1 focus:outline-none"
+                className="rounded-full p-1 focus:outline-none text-impolar-bg-surface-text"
               >
                 🔔
               </button>
               {/* dashboard link */}
               <Link
                 to={RoutesAndUrls.HOME.urlPath}
-                className="inline-flex items-center rounded-md border border-secondary bg-surface px-3 py-1.5 text-sm font-medium hover:bg-highlight"
+                className="inline-flex items-center rounded-md border border-impolar-secondary bg-impolar-bg-surface px-3 py-1.5 text-sm font-medium text-impolar-bg-surface-text hover:bg-impolar-bg-highlight"
               >
                 {RoutesAndUrls.HOME.pageName}
               </Link>
               {/* user avatar */}
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-impolar-primary text-sm font-medium text-impolar-primary-text">
                 A
               </div>
             </div>
@@ -53,8 +53,8 @@ export const UserView = ({ children }: UserViewProps) => {
       </header>
 
       {/* NAVIGATION UNDER HEADER */}
-      <div className="bg-surface shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-impolar-bg-surface shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
           <nav className="flex justify-start">
             {/* Feedback */}
             <NavLink
@@ -63,8 +63,8 @@ export const UserView = ({ children }: UserViewProps) => {
               className={({ isActive }) =>
                 [
                   isActive
-                    ? "bg-main rounded-t-xl pt-3 px-4 pb-2"
-                    : "hover:bg-highlight px-3 py-2",
+                    ? "bg-impolar-bg rounded-t-xl pt-3 px-4 pb-2 text-impolar-bg-text"
+                    : "hover:bg-impolar-bg-highlight px-3 py-2 text-impolar-bg-surface-text",
                   "inline-flex items-center text-sm font-medium mr-6",
                 ].join(" ")
               }
@@ -80,8 +80,8 @@ export const UserView = ({ children }: UserViewProps) => {
               className={({ isActive }) =>
                 [
                   isActive
-                    ? "bg-main rounded-t-xl pt-3 px-4 pb-2"
-                    : "hover:bg-highlight px-3 py-2",
+                    ? "bg-impolar-bg rounded-t-xl pt-3 px-4 pb-2 text-impolar-bg-text"
+                    : "hover:bg-impolar-bg-highlight px-3 py-2 text-impolar-bg-surface-text",
                   "inline-flex items-center text-sm font-medium",
                 ].join(" ")
               }

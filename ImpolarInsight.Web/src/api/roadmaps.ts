@@ -9,6 +9,7 @@ const getRoadmapQuery = graphql(/* GraphQL */ `
       name
       url
       color
+      icon
       index
       display
       roadmapCollectionId
@@ -30,6 +31,7 @@ const getRoadmapByUrlQuery = graphql(/* GraphQL */ `
       name
       url
       color
+      icon
       index
       display
       roadmapCollectionId
@@ -54,6 +56,7 @@ const getRoadmapsQuery = graphql(/* GraphQL */ `
           name
           url
           color
+          icon
           index
           display
           roadmapCollectionId
@@ -79,6 +82,7 @@ const getRoadmapsByCollectionQuery = graphql(/* GraphQL */ `
           name
           url
           color
+          icon
           index
           display
         }

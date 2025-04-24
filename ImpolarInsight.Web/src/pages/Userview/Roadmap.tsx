@@ -265,20 +265,20 @@ const Roadmap: React.FC = () => {
 
     // Loading state
     if (isLoading || collectionsResult.fetching) {
-        return <div className="text-center py-8">Loading roadmap collections...</div>;
+        return <div className="text-center py-8 text-impolar-bg-text">Loading roadmap collections...</div>;
     }
 
     // No collections found
     const collectionsEdges = collectionsResult.data?.roadmapCollections?.edges;
     if (!collectionsEdges || collectionsEdges.length === 0) {
-        return <div className="text-center py-8">No roadmap collections found.</div>;
+        return <div className="text-center py-8 text-impolar-bg-text">No roadmap collections found.</div>;
     }
 
     return (
         <div className="container mx-auto p-4">
             {/* Collection selector */}
             <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-3">Roadmap Collections</h2>
+                <h2 className="text-xl font-semibold mb-3 text-impolar-bg-text">Roadmap Collections</h2>
                 <div className="flex flex-wrap gap-2">
                     {collectionsEdges.map(edge => (
                         <button
@@ -286,8 +286,8 @@ const Roadmap: React.FC = () => {
                             onClick={() => handleCollectionSelect(edge.node.id)}
                             className={`px-4 py-2 rounded-md ${
                                 selectedCollectionId === edge.node.id
-                                    ? 'bg-primary text-primary-text'
-                                    : 'bg-bg-highlight text-bg-highlight-text'
+                                    ? 'bg-impolar-primary text-impolar-primary-text'
+                                    : 'bg-impolar-bg-highlight text-impolar-bg-highlight-text'
                             }`}
                         >
                             {edge.node.name}
@@ -297,16 +297,16 @@ const Roadmap: React.FC = () => {
             </div>
 
             {/* Kanban board with roadmaps as columns */}
-            <h2 className="text-xl font-semibold mb-3">
+            <h2 className="text-xl font-semibold mb-3 text-impolar-bg-text">
                 {collectionsEdges.find(
                     edge => edge.node.id === selectedCollectionId
                 )?.node.name || "Roadmap"}
             </h2>
             
             {roadmapsResult.fetching ? (
-                <div className="text-center py-8">Loading roadmaps...</div>
+                <div className="text-center py-8 text-impolar-bg-text">Loading roadmaps...</div>
             ) : columns.length === 0 ? (
-                <div className="text-center py-8">No roadmaps found in this collection.</div>
+                <div className="text-center py-8 text-impolar-bg-text">No roadmaps found in this collection.</div>
             ) : (
                 <KanbanBoard
                     columns={columns}
