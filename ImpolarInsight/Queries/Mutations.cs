@@ -137,7 +137,7 @@ public record CreatePostInput(
     string Title,
     string Slug,
     string? ContentMarkdown,
-    Guid UserId,
+    string UserId,
     Guid? BoardId,
     Guid? RoadmapId);
 
@@ -187,7 +187,7 @@ public class VoteMutations {
     }
     [Authorize(Policy = "user")]
     public async Task<bool> DeleteVoteByUserAndPost(
-        Guid userId,
+        string userId,
         Guid postId,
         ImpolarInsightContext db) {
         var vote = await db.Votes
@@ -201,7 +201,7 @@ public class VoteMutations {
 }
 
 public record CreateVoteInput(
-    Guid UserId,
+    string UserId,
     Guid PostId);
 
 // Roadmap Mutations
@@ -541,7 +541,7 @@ public class CommentMutations {
 public record CreateCommentInput(
     string Body,
     Guid PostId,
-    Guid AuthorId,
+    string AuthorId,
     Guid? ParentId = null,
     bool IsInternal = false);
 
@@ -595,7 +595,7 @@ public class PostActivityMutations {
 public record CreatePostActivityInput(
     string Type,
     Guid PostId,
-    Guid AuthorId);
+    string AuthorId);
 
 // SiteSettings Mutations
 [ExtendObjectType(OperationTypeNames.Mutation)]

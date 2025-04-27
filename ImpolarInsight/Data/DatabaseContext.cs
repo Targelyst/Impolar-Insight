@@ -3,10 +3,12 @@ using ImpolarInsight.Models;
 using ImpolarInsight.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Aufy.EntityFrameworkCore;
+using Aufy.Core;
 
 namespace ImpolarInsight.Data;
 
-public class ImpolarInsightContext : IdentityDbContext<User, IdentityRole<Guid>, Guid> {
+public class ImpolarInsightContext : IdentityDbContext<User>, IAufyDbContext<User> {
 
     private readonly IServiceScope serviceScope;
     private readonly IUserService userService;
@@ -18,6 +20,9 @@ public class ImpolarInsightContext : IdentityDbContext<User, IdentityRole<Guid>,
         this.serviceScope = serviceScopeFactory.CreateScope();
         this.userService = this.serviceScope.ServiceProvider.GetRequiredService<IUserService>();
     }
+
+    // Required for auth
+    public DbSet<AufyRefreshToken> RefreshTokens { get; set; } = null!;
 
     // Feedback management models
     public DbSet<Board> Boards { get; set; } = null!;
@@ -36,6 +41,7 @@ public class ImpolarInsightContext : IdentityDbContext<User, IdentityRole<Guid>,
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyAufyModel();
 
         // Apply tenant filter to all entities derived from Entity
         modelBuilder.Entity<Board>().HasQueryFilter(e => e.Tenant.Domain == userService.TenantDomain);

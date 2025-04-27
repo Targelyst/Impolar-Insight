@@ -1,4 +1,3 @@
-using ImpolarInsight.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +24,7 @@ public static class SeedingExtensions {
         using var scope = host.Services.CreateScope();
         var roleManager = scope
             .ServiceProvider
-            .GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+            .GetRequiredService<RoleManager<IdentityRole>>();
 
         if (!await roleManager.RoleExistsAsync("Administrator")) {
             await roleManager.CreateAsync(new("Administrator"));

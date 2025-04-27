@@ -111,7 +111,7 @@ public class DevelopmentSeeder {
             if (exampleAdminUser == null) {
                 Console.WriteLine("Creating example admin user...");
                 exampleAdminUser = new User {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Email = "admin2@example.com",
                     UserName = "exampleadmin",
                     TenantId = devTenant2
@@ -694,7 +694,7 @@ public class DevelopmentSeeder {
                                 FromRoadmapId = null,
                                 ToRoadmapId = post.RoadmapId,
                                 MovedAt = post.CreatedAt.AddDays(2),
-                                MovedByUserId = exampleAdminUser?.Id,
+                                MovedByUserId = exampleAdminUser.Id,
                                 TenantId = devTenant2
                             });
                         }
@@ -774,7 +774,7 @@ public class DevelopmentSeeder {
             if (adminUser == null) {
                 Console.WriteLine("Creating admin user...");
                 adminUser = new User {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Email = "admin1@example.com",
                     UserName = "admin1",
                     // PasswordHash = hasherHashPassword("admin123"),

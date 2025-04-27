@@ -114,7 +114,7 @@ public static class PostQueries {
     [UseFiltering]
     [UseSorting]
     public static IQueryable<Post> GetPostsByUser(
-        Guid userId,
+        string userId,
         ImpolarInsightContext db
     ) => db.Posts
         .Where(p => p.UserId == userId)
@@ -155,7 +155,7 @@ public static class VoteQueries {
     [UseFiltering]
     [UseSorting]
     public static IQueryable<Vote> GetVotesByUser(
-        Guid userId,
+        string userId,
         ImpolarInsightContext db
     ) => db.Votes
         .Where(v => v.UserId == userId)
@@ -239,7 +239,7 @@ public static class UserQueries {
     [UseFirstOrDefault]
     [UseProjection]
     public static IQueryable<User> GetUser(
-        Guid id,
+        string id,
         ImpolarInsightContext db
     ) => db.Users.Where(u => u.Id == id);
 
@@ -328,7 +328,7 @@ public static class PostActivityQueries {
     [UseFiltering]
     [UseSorting]
     public static IQueryable<PostActivity> GetPostActivitiesByAuthor(
-        Guid authorId,
+        string authorId,
         ImpolarInsightContext db
     ) => db.PostActivities
         .Where(pa => pa.AuthorId == authorId)

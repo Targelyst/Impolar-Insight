@@ -21,7 +21,7 @@ public class BelongsToCurrentDomainHandler(IUserService userService, UserManager
 
         var currentUser = await userManager
             .Users
-            .Where(u => u.Id == Guid.Parse(userId))
+            .Where(u => u.Id == userId)
             .Include(u => u.Tenant)
             .FirstOrDefaultAsync();
         if (currentUser is null || currentUser.Tenant is null) {

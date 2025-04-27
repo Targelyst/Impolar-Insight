@@ -27,6 +27,21 @@ services:
     #   - source: keycloak-realm
     #     target: /opt/keycloak/data/import/impolar.json
 
+  # Fake mail server for development
+  mail-server:
+    image: rnwood/smtp4dev:3.8.6
+    ports:
+      - "9083:5000"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    command: start-dev # --import-realm
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    # configs:
+    #   - source: keycloak-realm
+    #     target: /opt/keycloak/data/import/impolar.json
+
 volumes:
   pg_data:
   keycloak_data:

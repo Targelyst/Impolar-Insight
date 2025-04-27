@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using HotChocolate.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Aufy.Core;
 
 namespace ImpolarInsight.Models;
 
@@ -34,7 +33,7 @@ public class Post : KeyedEntity {
     public DateTime? UpdatedAt { get; set; }
 
     // Relations
-    public Guid UserId { get; set; }
+    public string UserId { get; set; } = null!;
     [GraphQLIgnore]
     public virtual User User { get; set; } = null!;
     public Guid? BoardId { get; set; }
@@ -62,7 +61,7 @@ public class RoadmapCollection : KeyedEntity {
 /// Vote represents a user's upvote on a post
 /// </summary>
 public class Vote : KeyedEntity {
-    public Guid UserId { get; set; }
+    public string UserId { get; set; } = null!;
     [GraphQLIgnore]
     public virtual User User { get; set; } = null!;
     public Guid PostId { get; set; }
@@ -89,7 +88,7 @@ public class Roadmap : KeyedEntity {
 /// <summary>
 /// User model for authentication and authorization
 /// </summary>
-public class User : IdentityUser<Guid> {
+public class User : IdentityUser, IAufyUser {
 
     // public string? Name { get; set; }
     // public required string Email { get; set; }
@@ -139,7 +138,7 @@ public class PostActivity : KeyedEntity {
     public Guid PostId { get; set; }
     [GraphQLIgnore]
     public virtual Post Post { get; set; } = null!;
-    public Guid AuthorId { get; set; }
+    public string AuthorId { get; set; } = null!;
     [GraphQLIgnore]
     public virtual User Author { get; set; } = null!;
 }
@@ -157,7 +156,7 @@ public class PostRoadmapHistory : KeyedEntity {
     public virtual Roadmap? ToRoadmap { get; set; }
 
     public DateTime MovedAt { get; set; } = DateTime.UtcNow;
-    public Guid? MovedByUserId { get; set; }
+    public string MovedByUserId { get; set; } = null!;
     public virtual User? MovedByUser { get; set; }
 }
 

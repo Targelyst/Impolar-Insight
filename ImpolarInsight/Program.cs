@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using ImpolarInsight.Configuration;
 using ImpolarInsight.Data;
 using ImpolarInsight.Services;
 using ImpolarInsight.Models;
-using Microsoft.AspNetCore.Identity;
 using ImpolarInsight.Auth;
+using Aufy.Core;
+using Aufy.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,13 +30,13 @@ builder.Services.AddOptions<DatabaseConfiguration>()
   .ValidateDataAnnotations()
   .ValidateOnStart();
 
-builder.Services.AddOptions<AuthConfiguration>()
-  .Bind(builder.Configuration.GetSection(AuthConfiguration.Section))
-  .ValidateDataAnnotations()
-  .ValidateOnStart();
+// builder.Services.AddOptions<AuthConfiguration>()
+//   .Bind(builder.Configuration.GetSection(AuthConfiguration.Section))
+//   .ValidateDataAnnotations()
+//   .ValidateOnStart();
 
-var authConfig = builder.Configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>()
-    ?? throw new Exception($"Could not get configuration section {AuthConfiguration.Section}");
+// var authConfig = builder.Configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>()
+//     ?? throw new Exception($"Could not get configuration section {AuthConfiguration.Section}");
 
 builder.Services.AddDbContextFactory<ImpolarInsightContext>(opt => {
     var c = builder.Configuration.GetSection(DatabaseConfiguration.Section).Get<DatabaseConfiguration>()
@@ -68,9 +69,10 @@ builder.Services.AddDbContextFactory<ImpolarInsightContext>(opt => {
 //     .AddIdentity<User, IdentityRole>();
 
 builder.Services
-    .AddIdentityApiEndpoints<User>()
-    .AddRoles<IdentityRole<Guid>>()
-    .AddEntityFrameworkStores<ImpolarInsightContext>();
+    .AddAufy<User>(builder.Configuration, opts => {
+        opts.DefaultRoles = ["User"];
+    })
+    .AddEntityFrameworkStore<ImpolarInsightContext, User>();
 
 builder.Services
     .AddScoped<IAuthorizationHandler, BelongsToCurrentDomainHandler>()
@@ -172,6 +174,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGraphQL();
-app.MapIdentityApi<User>();
+app.MapAufyEndpoints();
 
 app.RunWithGraphQLCommands(args);
