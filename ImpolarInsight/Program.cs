@@ -7,7 +7,7 @@ using ImpolarInsight.Models;
 using ImpolarInsight.Auth;
 using Aufy.Core;
 using Aufy.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+using Aufy.FluentEmail;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,11 +68,16 @@ builder.Services.AddDbContextFactory<ImpolarInsightContext>(opt => {
 // builder.Services
 //     .AddIdentity<User, IdentityRole>();
 
+builder.Services.Configure<AufyOptions>(opts => {
+    opts.ClientApp.EmailConfirmationPath = "/api/account/email/confirm";
+});
+
 builder.Services
     .AddAufy<User>(builder.Configuration, opts => {
         opts.DefaultRoles = ["User"];
     })
-    .AddEntityFrameworkStore<ImpolarInsightContext, User>();
+    .AddEntityFrameworkStore<ImpolarInsightContext, User>()
+    .AddFluentEmail();
 
 builder.Services
     .AddScoped<IAuthorizationHandler, BelongsToCurrentDomainHandler>()
